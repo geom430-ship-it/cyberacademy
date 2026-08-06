@@ -16,8 +16,8 @@ header { background-color: var(--bg-card); border-bottom: 1px solid var(--border
 .logo { font-size: 1.6rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; }
 .logo span { color: var(--accent); text-shadow: 0 0 10px var(--accent-glow); }
 
-.top-nav { display: flex; align-items: center; gap: 25px; }
-.nav-link { color: var(--text-muted); text-decoration: none; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 0.95rem; }
+.top-nav { display: flex; align-items: center; gap: 20px; }
+.nav-link { color: var(--text-muted); text-decoration: none; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 0.9rem; }
 .nav-link:hover { color: var(--accent); text-shadow: 0 0 8px var(--accent-glow); }
 
 .header-profile { display: flex; align-items: center; gap: 15px; background: rgba(0,0,0,0.5); padding: 8px 15px; border-radius: 8px; border: 1px solid var(--border); }
@@ -39,7 +39,7 @@ header { background-color: var(--bg-card); border-bottom: 1px solid var(--border
 .auth-right { flex: 1; display: flex; justify-content: center; align-items: center; background: radial-gradient(circle at center, #111827 0%, #000 100%); position: relative; }
 .auth-box { background: rgba(15, 23, 42, 0.6); padding: 50px; border-radius: 12px; border: 1px solid var(--border); width: 100%; max-width: 450px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); backdrop-filter: blur(20px); }
 .auth-box h2 { color: var(--text-muted); margin-bottom: 25px; font-size: 1.1rem; letter-spacing: 3px; font-family: monospace; }
-@media (max-width: 1000px) { .auth-container { flex-direction: column; } .auth-left { display: none; } .top-nav { flex-wrap: wrap; justify-content: center; } }
+@media (max-width: 1100px) { .auth-container { flex-direction: column; } .auth-left { display: none; } .top-nav { flex-wrap: wrap; justify-content: center; } }
 
 .container { padding: 40px 20px; max-width: 1200px; margin: 0 auto; position: relative; z-index: 10; }
 .view-section { display: none; }
@@ -68,10 +68,10 @@ header { background-color: var(--bg-card); border-bottom: 1px solid var(--border
 .course-body p { font-size: 1.1rem; color: #cbd5e1; line-height: 1.8; margin-bottom: 20px; }
 .course-body ul { margin-left: 30px; color: #cbd5e1; font-size: 1.1rem; line-height: 1.8; margin-bottom: 20px; }
 .course-body li { margin-bottom: 10px; }
-.course-body .media-wrapper { background: #000; padding: 10px; border-radius: 8px; border: 1px solid var(--border); margin: 30px 0; text-align: center; }
-.course-body img { max-width: 100%; border-radius: 4px; }
-.course-body .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 4px; }
-.course-body iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+.course-body table { width: 100%; border-collapse: collapse; margin: 25px 0; background: #000; border-radius: 6px; overflow: hidden; border: 1px solid var(--border); }
+.course-body th, .course-body td { padding: 15px; border: 1px solid var(--border); text-align: left; }
+.course-body th { background: rgba(16, 185, 129, 0.1); color: var(--accent); font-family: monospace; }
+.course-body td { color: #cbd5e1; font-size: 0.95rem; }
 
 .btn-back { background: transparent; color: var(--text-muted); border: 1px solid var(--border); padding: 10px 20px; border-radius: 4px; cursor: pointer; margin-bottom: 20px; font-family: monospace; font-weight: bold; transition: 0.2s; font-size: 1rem;}
 .btn-back:hover { color: #fff; border-color: #fff; background: rgba(255,255,255,0.1); }
@@ -82,7 +82,6 @@ header { background-color: var(--bg-card); border-bottom: 1px solid var(--border
 .term-input, .web-input { width: 100%; padding: 15px; background: #000; color: var(--accent); border: 1px solid #333; border-radius: 4px; font-family: monospace; font-size: 1.1rem; outline: none; margin-bottom: 15px; }
 .term-input:focus, .web-input:focus { border-color: var(--accent); box-shadow: inset 0 0 15px rgba(16, 185, 129, 0.15); }
 .term-output { margin-top: 15px; font-family: monospace; color: #a1a1aa; white-space: pre-wrap; line-height: 1.5; font-size: 1rem; }
-.code-editor { min-height: 150px; border-left: 4px solid var(--accent); }
 
 .qcm-box { border-top: 4px solid var(--warning); background: rgba(0,0,0,0.5); }
 .options label { display: block; background: rgba(15, 23, 42, 0.8); padding: 20px; margin-bottom: 15px; border-radius: 6px; cursor: pointer; border: 1px solid var(--border); transition: 0.2s; font-size: 1.05rem; }
