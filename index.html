@@ -9,7 +9,6 @@
 <body>
     <div class="scanlines"></div>
 
-    <!-- EN-TÊTE PROFESSIONNEL (Navigation en haut à droite) -->
     <header id="main-header" style="display: none;">
         <div class="logo">Cyber<span>Academy</span></div>
         <nav class="top-nav">
@@ -30,7 +29,6 @@
         </nav>
     </header>
 
-    <!-- TERMINAL FLOTTANT GLOBAL (HUD) -->
     <button id="hud-btn" onclick="toggleHUD()">>_</button>
     <div id="hud-terminal" class="hud-window">
         <div class="hud-header">
@@ -43,7 +41,6 @@
         </div>
     </div>
 
-    <!-- VUE AUTHENTIFICATION PRO -->
     <div id="auth-view" class="view-section active-view auth-container">
         <div class="auth-left">
             <div class="auth-branding">
@@ -73,11 +70,10 @@
 
     <div class="container">
         
-        <!-- VUE DASHBOARD GLOBAL -->
         <div id="dashboard-view" class="view-section">
             <div class="content-box" style="border-left: 4px solid var(--accent); margin-bottom: 30px;">
                 <h2 style="color: #fff; border:none; margin:0;">Centre de Commandement (Dashboard)</h2>
-                <p style="color:var(--text-muted); margin-top:10px;">Bienvenue, opérateur. Suivez vos statistiques, accédez rapidement à vos cursus et surveillez vos accès CTF.</p>
+                <p style="color:var(--text-muted); margin-top:10px;">Bienvenue, opérateur. Suivez vos statistiques et accédez à vos cursus.</p>
             </div>
             
             <div class="theme-grid" style="margin-bottom: 40px;">
@@ -91,7 +87,7 @@
                 </div>
                 <div class="content-box" style="margin:0; text-align:center;">
                     <h3 style="color:var(--text-muted); font-size:0.9rem;">DÉFIS CTF RÉSOLUS</h3>
-                    <div id="dash-ctf-count" style="font-size:2rem; font-weight:bold; color:var(--danger); font-family:monospace; margin:10px 0;">0 / 5</div>
+                    <div id="dash-ctf-count" style="font-size:2rem; font-weight:bold; color:var(--danger); font-family:monospace; margin:10px 0;">0 / 3</div>
                 </div>
             </div>
 
@@ -114,12 +110,11 @@
             </div>
         </div>
 
-        <!-- VUE PILIERS D'APPRENTISSAGE (Tracks) -->
         <div id="tracks-view" class="view-section">
             <div id="tracks-selection">
                 <div class="content-box" style="margin-bottom: 30px; border-left: 4px solid var(--accent);">
                     <h2 style="color: #fff; border:none; margin:0;">Piliers d'Apprentissage</h2>
-                    <p style="color:var(--text-muted); margin-top:10px;">Choisissez un pilier pour suivre les cours et passer les examens de certification.</p>
+                    <p style="color:var(--text-muted); margin-top:10px;">Choisissez un pilier pour suivre les cours théoriques.</p>
                 </div>
                 <div class="theme-grid">
                     <div class="track-card card-dev" onclick="openTrack('dev')">
@@ -144,39 +139,33 @@
             </div>
         </div>
 
-        <!-- VUE FORENSICS & SOC (Nouvel Onglet) -->
         <div id="forensics-view" class="view-section">
             <div class="content-box" style="border-left: 4px solid #3b82f6; margin-bottom: 30px;">
                 <h2 style="color: #3b82f6; border:none; margin:0;">🔬 Module Forensics & Investigation Numérique</h2>
-                <p style="color:var(--text-muted); margin-top:10px;">Analysez des artefacts système, des dumps mémoire et du trafic réseau brut pour remonter jusqu'aux attaquants.</p>
+                <p style="color:var(--text-muted); margin-top:10px;">Analysez des artefacts système et du trafic réseau.</p>
             </div>
             <div class="theme-grid">
                 <div class="theme-card" onclick="openForensicsLesson('pcap')">
                     <div class="theme-title">📡 Analyse de Trames PCAP</div>
-                    <div class="theme-desc">Apprenez à utiliser Wireshark pour extraire des fichiers et des mots de passe en clair d'une capture réseau.</div>
+                    <div class="theme-desc">Apprenez à utiliser Wireshark pour extraire des fichiers et des mots de passe.</div>
                 </div>
                 <div class="theme-card" onclick="openForensicsLesson('memory')">
                     <div class="theme-title">🧠 Analyse de Dump Mémoire (RAM)</div>
-                    <div class="theme-desc">Utilisation de Volatility pour détecter des malwares injectés directement dans la mémoire vive.</div>
-                </div>
-                <div class="theme-card" onclick="openForensicsLesson('logs_advanced')">
-                    <div class="theme-title">📊 Corrélation de Logs Avancée</div>
-                    <div class="theme-desc">Traquer les mouvements latéraux d'un attaquant à travers un domaine Active Directory.</div>
+                    <div class="theme-desc">Détection de malwares injectés dans la mémoire vive.</div>
                 </div>
             </div>
             <div id="forensics-content-box" style="display:none; margin-top:30px;"></div>
         </div>
 
-        <!-- ZONE CTF (Défis verrouillés par niveau) -->
         <div id="ctf-view" class="view-section">
             <div class="content-box" style="border-left: 4px solid var(--danger); margin-bottom: 30px;">
                 <h2 style="color: var(--danger); border:none; margin:0;">🚩 Zone Bonus : Capture The Flag</h2>
-                <p style="color:var(--text-muted); margin-top:10px;">Ces défis sont verrouillés. Validez les examens des niveaux correspondants dans les Piliers pour y accéder.</p>
+                <p style="color:var(--text-muted); margin-top:10px;">Ces défis sont verrouillés tant que le niveau requis n'est pas validé par un QCM.</p>
             </div>
             <div id="ctf-container" class="theme-grid"></div>
         </div>
 
-        <!-- THEME VIEW (Le Grand Cours) -->
+        <!-- GRANDE VUE DE COURS (Théorie + Simulateur + QCM) -->
         <div id="theme-view" class="view-section">
             <button class="btn-back" onclick="switchView('tracks-view'); openTrack(currentTrack);">← Retour au Pilier</button>
             <div class="content-box">
@@ -193,7 +182,6 @@
             </div>
         </div>
 
-        <!-- CTF CHALLENGE VIEW -->
         <div id="challenge-view" class="view-section">
             <button class="btn-back" onclick="switchView('ctf-view')">← Retour aux Bonus</button>
             <div class="content-box" id="challenge-desc"></div>
@@ -206,11 +194,10 @@
             </div>
         </div>
 
-        <!-- TOOLKIT OPÉRATIONNEL -->
         <div id="tools-view" class="view-section">
             <div class="content-box" style="margin-bottom: 30px; border-left: 4px solid var(--warning);">
-                <h2 style="color: var(--warning); border:none; margin:0;">🛠️ Toolkit Opérationnel & Payload Generator</h2>
-                <p style="color:var(--text-muted); margin-top:10px;">Générez vos charges utiles et effectuez vos calculs réseaux.</p>
+                <h2 style="color: var(--warning); border:none; margin:0;">🛠️ Toolkit Opérationnel</h2>
+                <p style="color:var(--text-muted); margin-top:10px;">Générez vos charges utiles et effectuez vos calculs.</p>
             </div>
 
             <div class="theme-grid">
