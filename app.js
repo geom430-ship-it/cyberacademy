@@ -1,6 +1,6 @@
 /* =========================================================================
-   CYBERACADEMY PRO - Core Engine v6.0
-   Features : Dashboard, Tracks, Forensics Module, Locked CTFs, Toolkit
+   CYBERACADEMY PRO - Core Engine v7.0
+   Features : Theory First, Interactive Simulators, Real QCM Validation
    ========================================================================= */
 
 const trackDB = {
@@ -36,7 +36,7 @@ const trackDB = {
                     `, 
                     simType: "idor", 
                     simData: { instruction: "Modifiez l'ID de l'objet pour cibler le profil administrateur (ID 1)." }, 
-                    quiz: [{ q: "Comment se protège-t-on contre une faille IDOR ?", options: ["En cachant les boutons du site", "En vérifiant systématiquement les autorisations (contrôle d'accès) côté serveur"], ans: "1" }] 
+                    quiz: [{ q: "Comment se protège-t-on contre une faille IDOR ?", options: ["En cachant les boutons du site", "En vérifiant systématiquement les autorisations côté serveur"], ans: "1" }] 
                 }
             ],
             exam: [{ q: "Que signifie l'acronyme IDOR ?", options: ["Internal Direct Object Routing", "Insecure Direct Object Reference", "Internet Data Object Request"], ans: "1" }]
@@ -214,19 +214,12 @@ function updateDashboardStats() {
     document.getElementById('dash-ctf-count').innerText = `${state.completedCTF.length} / ${ctfDB.length}`;
 }
 
-// Module Forensics dynamique
 function openForensicsLesson(type) {
     const box = document.getElementById('forensics-content-box');
     box.style.display = 'block';
-    
     let content = "";
-    if(type === 'pcap') {
-        content = `<h2>Analyse de Trames Réseau (PCAP)</h2><p>Une capture PCAP enregistre chaque paquet traversant une interface réseau. Avec des filtres Wireshark comme <code>http.request.method == "POST"</code> ou <code>tcp.stream eq 0</code>, on isole le trafic sensible.</p>`;
-    } else if(type === 'memory') {
-        content = `<h2>Analyse de Dump RAM avec Volatility</h2><p>Volatility est le framework standard pour examiner la mémoire vive. La commande <code>vol.py -f mem.raw pslist</code> liste tous les processus actifs au moment du crash ou du piratage.</p>`;
-    } else if(type === 'logs_advanced') {
-        content = `<h2>Corrélation de Logs Active Directory</h2><p>Recherchez l'Event ID 4624 (Connexion réussie) combiné à l'Event ID 4672 (Attribution de privilèges spéciaux) pour détecter une élévation de privilèges suspecte.</p>`;
-    }
+    if(type === 'pcap') { content = `<h2>Analyse de Trames Réseau (PCAP)</h2><p>Une capture PCAP enregistre chaque paquet traversant une interface réseau. Avec des filtres Wireshark comme <code>http.request.method == "POST"</code>, on isole le trafic sensible.</p>`; } 
+    else if(type === 'memory') { content = `<h2>Analyse de Dump RAM avec Volatility</h2><p>Volatility est le framework standard pour examiner la mémoire vive.</p>`; }
     box.innerHTML = `<div class="content-box">${content}<button class="btn-back" onclick="document.getElementById('forensics-content-box').style.display='none'">Fermer</button></div>`;
     box.scrollIntoView({ behavior: 'smooth' });
 }
@@ -247,15 +240,23 @@ function openTrack(trackKey) {
         const statusBadge = unlocked ? `<span class="status-badge unlocked">🔓 DÉBLOQUÉ</span>` : `<span class="status-badge locked">🔒 VERROUILLÉ</span>`;
 
         let themesHTML = ''; 
+        let allDone = true;
         level.themes.forEach(theme => {
             const isDone = state.completedCourses.includes(theme.id);
+            if(!isDone) allDone = false;
             const cardClass = "theme-card " + (isDone ? 'completed' : '') + (!unlocked ? ' disabled' : '');
             themesHTML += `<div class="${cardClass}" onclick="openCourse('${trackKey}', '${theme.id}', ${unlocked})"><div class="theme-title">${theme.title}</div><div class="theme-desc">${theme.desc}</div></div>`;
         });
 
         const examDone = state.completedExams.includes(level.id);
-        let examHTML = unlocked && !examDone ? `<button class="auth-btn" style="margin-top:15px; background:var(--warning); color:#000;" onclick="passExam(${level.id})">Valider l'examen du niveau (Débloque les CTF)</button>` : '';
-        if(examDone) examHTML = `<div style="margin-top:15px; color:var(--accent); font-family:monospace; font-weight:bold;">[ EXAMEN VALIDÉ - ACCÈS CTF AUTORISÉ ]</div>`;
+        let examHTML = '';
+        if (unlocked && allDone && !examDone) {
+            examHTML = `<button class="auth-btn" style="margin-top:15px; background:var(--warning); color:#000;" onclick="passExam(${level.id})">Passer l'Examen de Niveau (Débloque les CTF)</button>`;
+        } else if (examDone) {
+            examHTML = `<div style="margin-top:15px; color:var(--accent); font-family:monospace; font-weight:bold;">[ NIVEAU CERTIFIÉ & VALIDÉ ]</div>`;
+        } else if (unlocked && !allDone) {
+            examHTML = `<div style="margin-top:15px; color:var(--text-muted); font-size:0.85rem;">* Validez tous les cours ci-dessus pour débloquer l'examen.</div>`;
+        }
 
         container.innerHTML += `<div class="level-section" style="padding:20px; margin-bottom:20px; background:rgba(0,0,0,0.4); border-radius:8px;"><div class="level-header" style="display:flex; justify-content:space-between; margin-bottom:15px;"><h3>${level.title}</h3>${statusBadge}</div><div class="theme-grid">${themesHTML}</div>${examHTML}</div>`;
     });
@@ -308,11 +309,8 @@ function handleTerm(e, expectedHash, outputHash) { if (e.key === 'Enter') { cons
 function checkIDOR() {
     const val = document.getElementById('idor-input').value.trim();
     const out = document.getElementById('idor-output');
-    if(val === "1") {
-        out.innerHTML = "<span style='color:var(--accent);'>[SUCCESS IDOR] Données Administrateur récupérées :<br>{ \"user\": \"admin\", \"role\": \"superuser\", \"secret_token\": \"FLAG{idor_success_01}\" }</span>";
-    } else {
-        out.innerHTML = `Profil standard chargé pour l'ID : ${val}.`;
-    }
+    if(val === "1") { out.innerHTML = "<span style='color:var(--accent);'>[SUCCESS IDOR] Données Administrateur récupérées :<br>{ \"user\": \"admin\", \"role\": \"superuser\", \"secret_token\": \"FLAG{idor_success_01}\" }</span>"; } 
+    else { out.innerHTML = `Profil standard chargé pour l'ID : ${val}.`; }
 }
 function checkLogs() { const val = document.getElementById('log-input').value.trim(); if (val === "192.168.1.50") { document.getElementById('log-output').innerHTML = "<span style='color:var(--accent);'>[IP CONFIRMÉE] Attaque identifiée.</span>"; } else { document.getElementById('log-output').innerHTML = "Rien."; } }
 
@@ -343,7 +341,6 @@ function submitThemeQCM() {
     }
 }
 
-// Zone CTF Verrouillée
 function renderCTF() {
     const container = document.getElementById('ctf-container');
     container.innerHTML = '';
@@ -405,7 +402,6 @@ function submitFlag() {
     }
 }
 
-// Toolkit et Payload Generator
 function generatePayload() {
     const type = document.getElementById('payload-type').value;
     const ip = escapeHTML(document.getElementById('payload-ip').value.trim());
