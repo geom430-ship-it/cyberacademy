@@ -1,5 +1,5 @@
 /* =========================================================================
-   CYBERACADEMY PRO - Core Engine v9.0 (4 Niveaux Experts & CTF Massifs)
+   CYBERACADEMY PRO - Core Engine v10.0 (Masterclasses Massives & 6 QCMs)
    ========================================================================= */
 
 const trackDB = {
@@ -8,52 +8,77 @@ const trackDB = {
             id: 101, title: "Niveau 1 : Fondations Linux & Commandes Système",
             themes: [
                 { 
-                    id: "r_lvl1", title: "Masterclass : Maîtrise du Terminal Linux", desc: "Guide complet (1-2 pages) : Navigation, permissions, fichiers cachés et outils de recherche.", 
+                    id: "r_lvl1", title: "Masterclass : Maîtrise Approfondie du Terminal Linux", desc: "Guide complet (1-2 pages de lecture) : Navigation, permissions avancées, fichiers cachés et outils de recherche textuelle.", 
                     content: `
-                        <h2>1. Introduction au système Linux en cybersécurité</h2>
-                        <p>Plus de 90 % des serveurs mondiaux, des routeurs et des infrastructures Cloud fonctionnent sous Linux. Pour un analyste en sécurité ou un testeur d'intrusion (Pentester), la maîtrise absolue du terminal Linux n'est pas une option. Sous Linux, la philosophie fondamentale est que <strong>tout est un fichier</strong>.</p>
-                        <h3>Commandes indispensables de gestion</h3>
+                        <h2>1. Introduction fondamentale au système Linux en cybersécurité</h2>
+                        <p>Plus de 90 % des serveurs mondiaux, des routeurs des plus grands opérateurs, des supercalculateurs ainsi que les architectures Cloud (AWS, Azure, GCP) fonctionnent sous des distributions Linux. Pour un analyste en sécurité ou un testeur d'intrusion (Pentester), la maîtrise absolue du terminal Linux n'est pas une simple option : c'est la condition sine qua non pour survivre sur le terrain. Contrairement à l'architecture de bureau standard de Windows, la philosophie fondamentale de Linux repose sur un axiome immuable : <strong>tout est un fichier</strong>. Les disques durs physiques, les processus en cours d'exécution dans la mémoire, les interfaces réseau, les cartes graphiques et les périphériques de stockage sont tous représentés et manipulables sous forme de fichiers ou de flux de descripteurs au sein d'une arborescence unique unifiée par la racine (<code>/</code>).</p>
+                        
+                        <p>L'exploration et l'exploitation des systèmes Linux débutent toujours par la phase de repérage et de navigation. L'opérateur doit être capable de se déplacer instantanément à l'aveugle dans des environnements contraints (comme des conteneurs Docker ou des shells restreints). La commande <code>pwd</code> (Print Working Directory) permet à tout instant de connaître sa position exacte dans l'arborescence, tandis que <code>cd</code> (Change Directory) gère le déplacement à l'aide de chemins absolus (ex: <code>cd /var/www/html</code>) ou relatifs (ex: <code>cd ../config</code>).</p>
+
+                        <h2>2. Les commandes indispensables d'investigation et d'analyse</h2>
+                        <p>Pour lister, trier et inspecter les fichiers du système, un panel de commandes est quotidiennement utilisé par les professionnels de la sécurité :</p>
                         <table>
-                            <tr><th>Commande</th><th>Description détaillée</th></tr>
-                            <tr><td><code>pwd</code></td><td>Affiche le chemin absolu du répertoire courant.</td></tr>
-                            <tr><td><code>ls -la</code></td><td>Liste tous les fichiers, y compris cachés, avec permissions.</td></tr>
-                            <tr><td><code>grep</code></td><td>Recherche un motif ou une chaîne de caractères dans un fichier.</td></tr>
-                            <tr><td><code>chmod</code></td><td>Modifie les permissions d'accès (Lecture, Écriture, Exécution).</td></tr>
+                            <tr><th>Commande</th><th>Description détaillée et usage en cyber</th><th>Exemple pratique</th></tr>
+                            <tr><td><code>ls -la</code></td><td>Affiche l'intégralité des fichiers, y compris les fichiers masqués, avec leurs droits, propriétaires et tailles exactes.</td><td><code>ls -la /home/user/</code></td></tr>
+                            <tr><td><code>cat / more / less</code></td><td>Permet de lire le contenu textuel brut d'un fichier de configuration ou de logs.</td><td><code>cat /etc/passwd</code></td></tr>
+                            <tr><td><code>grep</code></td><td>Recherche un motif, une expression régulière ou une chaîne de caractères spécifique dans un flux ou un fichier.</td><td><code>cat access.log | grep "192.168"</code></td></tr>
+                            <tr><td><code>find</code></td><td>Recherche des fichiers sur l'ensemble du disque selon des critères précis (permissions, date, taille, nom).</td><td><code>find / -perm -4000 2>/dev/null</code></td></tr>
+                            <tr><td><code>chmod / chown</code></td><td>Modifient respectivement les permissions d'exécution/lecture/écriture et le propriétaire d'un fichier.</td><td><code>chmod 755 exploit.sh</code></td></tr>
                         </table>
+
+                        <h2>3. Le secret des fichiers cachés et la logique des permissions (SUID/SGID)</h2>
+                        <p>Les administrateurs système et les développeurs malveillants ou négligents masquent régulièrement des fichiers de configuration critiques (contenant des mots de passe en clair, des chaînes de connexion de bases de données ou des clés privées SSH) en plaçant simplement un point (<code>.</code>) au début de leur nom (ex: <code>.env</code>, <code>.git/</code>, <code>.ssh/id_rsa</code>). Par défaut, la commande classique <code>ls</code> ignore totalement ces fichiers. Pour les révéler au grand jour, l'opérateur doit impérativement utiliser l'indicateur d'affichage global : <code>ls -a</code> ou <code>ls -la</code>.</p>
+                        
+                        <p>De plus, la gestion de la sécurité sous Linux repose sur un modèle de permissions strict divisé en trois classes : <strong>Propriétaire (User)</strong>, <strong>Groupe (Group)</strong> et <strong>Autres (Others)</strong>. Chaque classe possède des droits de <strong>Lecture (r = 4)</strong>, d'<strong>Écriture (w = 2)</strong> et d'<strong>Exécution (x = 1)</strong>. Des attributs spéciaux comme le <strong>SUID (Set User ID)</strong> permettent à un utilisateur standard d'exécuter un binaire temporairement avec les privilèges élevés du propriétaire du fichier (souvent <code>root</code>), ce qui constitue un vecteur majeur d'élévation de privilèges si le binaire est mal conçu.</p>
                     `, 
                     simType: "terminal", 
-                    simData: { instruction: "Affichez tous les fichiers cachés avec la commande adéquate.", expected: "ls -a", successOutput: "Fichiers détectés : config.php, .ssh_key" }, 
+                    simData: { instruction: "Exécutez la commande permettant de lister l'ensemble des fichiers, y compris les fichiers cachés.", expected: "ls -a", successOutput: "Fichiers détectés : config.php, .ssh_key, database.sql, .bash_history" }, 
                     quiz: [
-                        { q: "1. Que signifie le point (.) au début d'un nom de fichier sous Linux ?", options: ["Fichier corrompu", "Fichier caché", "Fichier système protégé"], ans: "1" },
-                        { q: "2. Quelle commande permet de chercher un texte dans un fichier ?", options: ["find", "grep", "search"], ans: "1" },
-                        { q: "3. Que gère la commande chmod ?", options: ["Les permissions d'accès", "L'adresse IP", "Le mot de passe root"], ans: "0" },
-                        { q: "4. Quel est le symbole représentant le super-utilisateur (administrateur suprême) ?", options: ["#", "$", "@"], ans: "0" },
-                        { q: "5. Comment afficher l'aide d'une commande dans le terminal ?", options: ["--help ou man", "?", "info-doc"], ans: "0" },
-                        { q: "6. Quelle commande affiche l'arborescence des processus ?", options: ["ps aux", "ls-proc", "top-run"], ans: "0" }
+                        { q: "1. Sous Linux, que signifie le fait qu'un nom de fichier commence par un point (.) ?", options: ["Il est corrompu et illisible", "Il est masqué / caché par le système de fichiers", "Il est en lecture seule absolue", "Il appartient obligatoirement à l'administrateur root"], ans: "1" },
+                        { q: "2. Quelle commande Linux permet de rechercher un motif textuel spécifique à l'intérieur d'un fichier de log ?", options: ["find", "search", "grep", "locate"], ans: "2" },
+                        { q: "3. Que gère précisément la commande chmod ?", options: ["Les permissions d'accès en lecture, écriture et exécution", "L'attribution dynamique des adresses IP", "Le hachage cryptographique du mot de passe root", "La vitesse du processeur du serveur"], ans: "0" },
+                        { q: "4. Quel est le symbole textuel représentant le prompt du super-utilisateur (administrateur suprême root) ?", options: ["#", "$", "@", "£"], ans: "0" },
+                        { q: "5. Comment obtenir la documentation détaillée d'une commande directement dans le terminal Linux ?", options: ["--help ou la commande man", "help-me svp", "info-doc online", "Rechercher sur Google"], ans: "0" },
+                        { q: "6. Quel est l'impact du bit SUID sur un fichier exécutable sous Linux ?", options: ["Il permet à n'importe quel utilisateur d'exécuter le programme avec les privilèges du propriétaire du fichier", "Il supprime définitivement le fichier après exécution", "Il chiffre le code source en AES-256", "Il interdit l'accès réseau au binaire"], ans: "0" }
                     ] 
                 }
             ],
-            exam: [{ q: "Quelle commande liste les fichiers cachés ?", options: ["ls -a", "cat -all", "show hidden"], ans: "0" }]
+            exam: [{ q: "Quelle commande liste l'intégralité des fichiers, y compris cachés ?", options: ["ls -a", "cat -all", "show hidden files"], ans: "0" }]
         },
         {
             id: 102, title: "Niveau 2 : OWASP Top 10 & Injections Web (SQLi, XSS)",
             themes: [
                 { 
-                    id: "r_lvl2", title: "Masterclass : Injections SQL et XSS", desc: "Guide complet (1-2 pages) : Contournement d'authentification et exécution de scripts côté client.", 
+                    id: "r_lvl2", title: "Masterclass : Injections SQL et XSS Avancées", desc: "Guide complet (1-2 pages de lecture) : Contournement d'authentification et exécution de scripts côté client.", 
                     content: `
-                        <h2>1. Injections SQL (SQLi)</h2>
-                        <p>Une injection SQL survient lorsqu'une application intègre des entrées utilisateur non assainies directement dans une requête de base de données. L'attaquant peut modifier la logique de la requête à l'aide de charges utiles telles que <code>' OR 1=1 -- -</code> pour contourner les mots de passe.</p>
-                        <h2>2. Cross-Site Scripting (XSS)</h2>
-                        <p>Le XSS permet d'injecter du code JavaScript malveillant dans une page web vue par d'autres utilisateurs. On distingue le XSS Stored (enregistré en base) et le XSS Reflected (reflété instantanément).</p>
+                        <h2>1. Injections SQL (SQLi) : Fondamentaux et Logique</h2>
+                        <p>Une injection SQL (SQLi) représente l'une des failles web les plus destructrices de l'histoire du numérique. Elle survient lorsqu'une application web dynamique intègre des données ou des paramètres fournis par l'utilisateur (provenant d'un formulaire, d'une URL ou d'en-têtes HTTP) directement dans une requête construite à la volée vers une base de données relationnelle (SGBD comme MySQL, PostgreSQL, Oracle ou MSSQL), sans effectuer de validation, de typage ou d'échappement rigoureux. Le SGBD exécute alors la charge malveillante en croyant qu'il s'agit d'instructions légitimes écrites par le développeur.</p>
+                        
+                        <p>Prenons l'exemple d'une requête d'authentification vulnérable :<br>
+                        <code>SELECT * FROM users WHERE username = 'input_user' AND password = 'input_password';</code></p>
+                        
+                        <p>Si un attaquant saisit dans le champ du mot de passe la charge utile classique <code>' OR 1=1 -- -</code>, la requête se transforme en :<br>
+                        <code>SELECT * FROM users WHERE username = 'admin' AND password = '' OR 1=1 -- -';</code></p>
+                        
+                        <p>L'apostrophe ferme prématurément la chaîne de caractères du mot de passe, l'instruction <code>OR 1=1</code> force la condition à être mathématiquement toujours vraie, et les tirets <code>-- -</code> transforment tout le reste de la requête d'origine en commentaire inoffensif. Le serveur valide ainsi l'accès administrateur sans connaître le mot de passe réel.</p>
+
+                        <h2>2. Cross-Site Scripting (XSS) : Le danger du code client</h2>
+                        <p>Le Cross-Site Scripting (XSS) est une faille de sécurité web qui permet à un attaquant d'injecter des scripts côté client (généralement du JavaScript ou du HTML) dans des pages web consultées par d'autres utilisateurs. On distingue traditionnellement trois grandes familles de XSS :</p>
+                        <ul>
+                            <li><strong>XSS Reflected (Réfléchi) :</strong> Le script malveillant est passé via un paramètre HTTP (par exemple dans une URL de recherche) et renvoyé immédiatement par le serveur dans la page de réponse sans être stocké. La victime doit cliquer sur un lien piégé.</li>
+                            <li><strong>XSS Stored (Stocké ou Persistant) :</strong> Le script est envoyé au serveur et enregistré de manière permanente dans la base de données (par exemple dans un espace de commentaires ou un profil utilisateur). Chaque utilisateur consultant la page charge et exécute le script à son insu.</li>
+                            <li><strong>XSS DOM-Based :</strong> La vulnérabilité réside entièrement dans le code JavaScript exécuté côté client, qui manipule le DOM de manière non sécurisée.</li>
+                        </ul>
+                        <p>L'impact principal d'une attaque XSS réussie est le vol de session (récupération des cookies de connexion via <code>document.cookie</code>), l'usurpation d'identité de l'utilisateur, la redirection vers des sites malveillants ou la modification de l'interface graphique du site (Defacement).</p>
                     `, 
                     simType: "none", 
                     quiz: [
-                        { q: "1. Quel payload classique permet un bypass d'authentification SQLi ?", options: ["' OR 1=1 -- -", "<script>alert(1)</script>", "../../etc/passwd"], ans: "0" },
-                        { q: "2. Quel est l'impact principal d'une faille XSS Stored ?", options: ["Vol de cookies de session des visiteurs", "Plantage direct du disque dur serveur", "Effacement de la table SQL"], ans: "0" },
-                        { q: "3. Qu'est-ce qu'une Blind SQLi ?", options: ["Une injection où le serveur ne renvoie pas directement les erreurs SQL", "Une injection aveugle sans clavier", "Un bug d'affichage CSS"], ans: "0" },
-                        { q: "4. Comment se protège-t-on contre les injections SQL ?", options: ["Requêtes préparées (Prepared Statements)", "Chiffrer le site en HTTP", "Masquer le bouton de login"], ans: "0" },
-                        { q: "5. Que signifie l'acronyme WAF ?", options: ["Web Application Firewall", "Wireless Access Framework", "Web Audit File"], ans: "0" },
-                        { q: "6. Quel protocole transporte le trafic web classique non chiffré ?", options: ["HTTP (Port 80)", "FTP (Port 21)", "SSH (Port 22)"], ans: "0" }
+                        { q: "1. Quel payload classique permet un bypass d'authentification par injection SQL ?", options: ["' OR 1=1 -- -", "<script>alert(1)</script>", "../../etc/passwd", "SELECT * FROM secrets"], ans: "0" },
+                        { q: "2. Quel est l'impact principal et le plus critique d'une faille XSS de type Stored ?", options: ["Vol des cookies de session et des jetons d'authentification des visiteurs du site", "Effacement complet du disque dur physique du serveur web distant", "Coupure totale de la fibre optique de l'entreprise", "Modification du mot de passe routeur Wi-Fi"], ans: "0" },
+                        { q: "3. Qu'est-ce qu'une attaque Blind SQLi (Injection SQL aveugle) ?", options: ["Une injection où le serveur ne renvoie pas directement les résultats ou les erreurs SQL dans la page", "Une attaque réalisée par un pirate aveugle", "Un bug d'affichage des feuilles de style CSS"], ans: "0" },
+                        { q: "4. Quelle est la contre-mesure absolue et recommandée pour stopper définitivement les injections SQL ?", options: ["L'utilisation exclusive de requêtes préparées (Prepared Statements / Parameterized Queries)", "Le chiffrement de toutes les pages en protocole HTTP simple", "Le masquage des boutons de connexion dans le code HTML", "L'augmentation de la mémoire RAM du serveur"], ans: "0" },
+                        { q: "5. Que signifie l'acronyme WAF dans l'architecture de défense d'une application web ?", options: ["Web Application Firewall", "Wireless Access Framework", "Web Audit File", "Windows Application Folder"], ans: "0" },
+                        { q: "6. Quel protocole réseau transporte par défaut le trafic web non chiffré sur Internet ?", options: ["HTTP (fonctionnant généralement sur le port TCP 80)", "FTP (utilisé pour le transfert de fichiers)", "SSH (dédié à l'administration sécurisée)", "SMTP (gérant les serveurs de messagerie)"], ans: "0" }
                     ] 
                 }
             ],
@@ -63,21 +88,26 @@ const trackDB = {
             id: 103, title: "Niveau 3 : Post-Exploitation & Élévation de Privilèges",
             themes: [
                 { 
-                    id: "r_lvl3", title: "Masterclass : SUID, Cron Jobs et Pivoting", desc: "Guide complet (1-2 pages) : Passage de l'utilisateur standard à root et rebond réseau.", 
+                    id: "r_lvl3", title: "Masterclass : SUID, Cron Jobs et Pivoting Avancé", desc: "Guide complet (1-2 pages de lecture) : Passage de l'utilisateur standard à root et rebond réseau.", 
                     content: `
                         <h2>1. Élévation de privilèges (PrivEsc) sous Linux</h2>
-                        <p>Une fois un premier pied à terre acquis via un reverse shell standard (souvent en tant qu'utilisateur restreint <code>www-data</code>), l'objectif est de s'élever au statut de <code>root</code>. On recherche les binaires mal configurés avec le bit <strong>SUID</strong> activé grâce à la commande : <code>find / -perm -4000 2>/dev/null</code>.</p>
-                        <h2>2. Pivoting et Redirection de port</h2>
-                        <p>Lorsque le réseau cible est cloisonné par un pare-feu, l'opérateur utilise des outils de tunneling (comme Chisel, Socat ou SSH port forwarding) pour rebondir de machine en machine et atteindre le réseau interne invisible.</p>
+                        <p>Acquérir un premier accès sur un serveur cible (souvent par le biais d'une faille web ou d'un service obsolète) ne confère généralement qu'un accès restreint (par exemple en tant que l'utilisateur non privilégié <code>www-data</code> ou <code>nobody</code>). L'objectif critique de la phase de post-exploitation est de réaliser une <strong>élévation de privilèges</strong> pour atteindre le compte suprême <code>root</code>. Pour ce faire, les pentesters auditen t l'environnement à l'aide de scripts automatisés ou de commandes manuelles.</p>
+                        
+                        <p>Parmi les vecteurs les plus fréquents figurent la recherche de fichiers binaires possédant le bit <strong>SUID</strong> activé (permettant d'exécuter des programmes avec les droits de leur propriétaire, souvent root), l'analyse des tâches planifiées du système (fichiers <code>/etc/crontab</code> exécutant des scripts modifiables en écriture par un utilisateur standard), ou encore l'exploitation de noyaux Linux (Kernel Exploits) obsolètes.</p>
+
+                        <h2>2. Pivoting et Redirection de port (Tunneling)</h2>
+                        <p>Dans de nombreuses architectures d'entreprise modernes, le réseau est segmenté. La machine compromise possède souvent deux interfaces réseau : l'une publique connectée à Internet (exposant le serveur web vulnérable), et l'autre privée (interne), invisible depuis l'extérieur, connectée au domaine sensible ou aux bases de données internes.</p>
+                        
+                        <p>L'attaquant utilise alors la technique du <strong>Pivoting</strong> (ou rebond). La machine compromise sert de passerelle (pivot). L'opérateur y déploie des outils de tunneling (comme <code>Chisel</code>, <code>Socat</code> ou un tunnel SSH SOCKS proxy) pour encapsuler le trafic TCP/UDP et le faire transiter à travers la machine compromise, lui permettant ainsi de scanner, d'attaquer et de compromettre l'ensemble du réseau interne cloisonné.</p>
                     `, 
                     simType: "none", 
                     quiz: [
-                        { q: "1. Que permet de détecter la commande find / -perm -4000 2>/dev/null ?", options: ["Les binaires avec le bit SUID activé", "Les fichiers supprimés", "Les mots de passe en clair"], ans: "0" },
-                        { q: "2. Qu'appelle-t-on le 'Pivoting' en Red Team ?", options: ["Rebondir à travers une machine compromise pour attaquer un réseau interne isolé", "Tourner l'écran du pc", "Changer d'adresse IP source toutes les secondes"], ans: "0" },
-                        { q: "3. Quel outil permet de créer un tunnel SOCKS proxy facilement en pentest ?", options: ["Chisel", "Nmap", "Wireshark"], ans: "0" },
-                        { q: "4. Qu'est-ce qu'une tâche cron mal sécurisée peut engendrer ?", options: ["Une élévation de privilèges si le script exécuté est modifiable en écriture", "Un crash du kernel Linux", "Une panne d'électricité"], ans: "0" },
-                        { q: "5. Quel utilisateur possède tous les droits absolus sur un système Linux ?", options: ["root", "guest", "admin"], ans: "0" },
-                        { q: "6. Qu'est-ce qu'un token d'accès sous Windows ? ", options: ["Un objet de sécurité décrivant le contexte de sécurité d'un utilisateur", "Un badge RFID physique", "Une clé de chiffrement BitLocker"], ans: "0" }
+                        { q: "1. Que permet de détecter précisément la commande find / -perm -4000 2>/dev/null ?", options: ["Les fichiers binaires possédant le bit SUID activé sur le système", "Les fichiers de configuration supprimés de la corbeille", "Les mots de passe stockés en clair dans le dossier personnel", "Les adresses IP connectées au port 80"], ans: "0" },
+                        { q: "2. Qu'appelle-t-on le 'Pivoting' dans les opérations Red Team ?", options: ["Utiliser une machine compromise comme passerelle pour attaquer un réseau interne isolé et invisible depuis l'extérieur", "Tourner l'écran physique de l'ordinateur de l'administrateur", "Changer d'adresse IP source toutes les millisecondes", "Redémarrer le serveur à distance"], ans: "0" },
+                        { q: "3. Quel outil de référence permet de créer un tunnel proxy SOCKS pour router du trafic à travers une machine compromise ?", options: ["Chisel", "Nmap", "Wireshark", "GIMP"], ans: "0" },
+                        { q: "4. Quel risque majeur présente une tâche cron système mal configurée ?", options: ["Une élévation de privilèges si le script exécuté périodiquement est modifiable en écriture par un utilisateur standard", "Un crash total et immédiat de la carte mère", "Une panne d'électricité générale dans les bureaux", "Un effacement des certificats SSL"], ans: "0" },
+                        { q: "5. Quel compte utilisateur possède par défaut tous les droits absolus d'administration sur un système Linux ?", options: ["root", "guest", "admin", "system"], ans: "0" },
+                        { q: "6. Qu'est-ce qu'un jeton d'accès (Access Token) sous système Windows ?", options: ["Un objet du noyau décrivant le contexte de sécurité et les privilèges d'un utilisateur connecté", "Un badge RFID physique d'accès aux locaux", "Une clé de chiffrement du disque dur BitLocker"], ans: "0" }
                     ] 
                 }
             ],
@@ -87,21 +117,24 @@ const trackDB = {
             id: 104, title: "Niveau 4 (Expert) : Attaques Active Directory & Evasion EDR",
             themes: [
                 { 
-                    id: "r_lvl4", title: "Masterclass : Kerberoasting & Contournement EDR", desc: "Guide complet (1-2 pages) : Compromission de domaines Windows et obfuscation avancée.", 
+                    id: "r_lvl4", title: "Masterclass : Kerberoasting, Golden Tickets et Contournement EDR", desc: "Guide complet (1-2 pages de lecture) : Compromission de domaines Windows et obfuscation avancée.", 
                     content: `
-                        <h2>1. Attaques sur l'Active Directory (AD)</h2>
-                        <p>Dans les grandes entreprises, l'Active Directory gère les authentifications. Les attaques majeures incluent le <strong>Kerberoasting</strong> (récupération de tickets de service pour les casser hors-ligne par force brute) et les attaques par <strong>Golden Ticket</strong> permettant de forger un ticket TGT administrateur maître.</p>
-                        <h2>2. Contournement d'EDR et AMSI</h2>
-                        <p>Les solutions de sécurité modernes (EDR) analysent les comportements en temps réel. Les attaquants utilisent l'injection de code dans des processus légitimes (Process Hollowing) et le patch de l'AMSI (Antimalware Scan Interface) en mémoire pour aveugler les sondes.</p>
+                        <h2>1. Attaques avancées sur l'Active Directory (AD)</h2>
+                        <p>Dans la quasi-totalité des grandes entreprises, l'architecture réseau repose sur l'<strong>Active Directory (AD)</strong> de Microsoft, gérant les identités, les postes de travail et les serveurs d'un domaine. La compromission d'un domaine AD représente le graal d'une opération Red Team. Parmi les techniques offensives majeures figure le <strong>Kerberoasting</strong> : tout utilisateur du domaine peut demander un ticket de service Kerberos (TGS) pour n'importe quel service associé à un compte utilisateur classique. Ce ticket étant en partie chiffré avec le hachage du mot de passe du compte de service, l'attaquant peut l'extraire et le casser hors-ligne par force brute pour récupérer le mot de passe en clair.</p>
+                        
+                        <p>Une autre attaque dévastatrice est le <strong>Golden Ticket</strong> : si un attaquant récupère le hachage du compte de service spécial <code>krbtgt</code> du domaine, il peut forger lui-même un ticket d'authentification TGT (Ticket Granting Ticket) maître doté de privilèges administrateur totaux et d'une durée de validité arbitraire, lui accordant un contrôle absolu et persistant sur l'ensemble du domaine.</p>
+
+                        <h2>2. Contournement d'EDR et techniques d'évasion</h2>
+                        <p>Les solutions de sécurité modernes installées sur les postes (les <strong>EDR</strong> - Endpoint Detection and Response) surveillent en temps réel les appels système (syscalls) et les comportements suspects en mémoire. Pour opérer discrètement, les attaquants contournent ces barrières en utilisant des techniques d'obfuscation avancées : le <strong>Process Hollowing</strong> (qui consiste à lancer un processus légitime en mode suspendu, vider sa mémoire pour y loger un payload malveillant) ou encore le patch en mémoire de l'<strong>AMSI</strong> (Antimalware Scan Interface) pour neutraliser les analyses dynamiques de scripts.</p>
                     `, 
                     simType: "none", 
                     quiz: [
-                        { q: "1. Qu'est-ce que le Kerberoasting ?", options: ["Une technique d'extraction et de cassage hors-ligne de tickets de service Active Directory", "Une méthode de cuisson de café sur serveur", "Un protocole de chiffrement Wi-Fi"], ans: "0" },
-                        { q: "2. Quel est l'objectif d'une attaque Golden Ticket ?", options: ["Forger un ticket d'authentification TGT maître pour un contrôle total du domaine AD", "Gagner un voyage", "Obtenir un accès invité"], ans: "0" },
-                        { q: "3. Que cible l'AMSI (Antimalware Scan Interface) sous Windows ?", options: ["L'analyse en mémoire des scripts dynamiques (PowerShell, VBScript)", "La vitesse de la carte graphique", "La résolution de l'écran"], ans: "0" },
-                        { q: "4. Qu'est-ce que le Process Hollowing ?", options: ["Une technique d'injection consistant à vider un processus légitime pour y loger du code malveillant", "Le nettoyage de la corbeille", "L'optimisation du processeur"], ans: "0" },
-                        { q: "5. Quel protocole réseau est au cœur de l'authentification Active Directory ?", options: ["Kerberos", "SMTP", "DHCP"], ans: "0" },
-                        { q: "6. Qu'est-ce qu'un Pass-the-Hash ?", options: ["Réutiliser un hachage de mot de passe capturé pour s'authentifier sans connaître le texte en clair", "Changer son mot de passe en un hashtag Twitter", "Effacer le cache du navigateur"], ans: "0" }
+                        { q: "1. Qu'est-ce que le Kerberoasting en environnement Active Directory ?", options: ["Une technique d'extraction et de cassage hors-ligne de tickets de service Kerberos pour récupérer des mots de passe", "Une méthode de cuisson de café sur les serveurs racks", "Un protocole de chiffrement des connexions Wi-Fi d'entreprise"], ans: "0" },
+                        { q: "2. Quel est l'objectif principal d'une attaque par Golden Ticket ?", options: ["Forger un ticket TGT maître pour obtenir un contrôle total et persistant sur l'ensemble du domaine Active Directory", "Gagner un voyage tous frais payés", "Obtenir un accès invité temporaire sans privilèges"], ans: "0" },
+                        { q: "3. Que cible précisément l'AMSI (Antimalware Scan Interface) sous Windows ?", options: ["L'analyse en mémoire et en temps réel des scripts dynamiques (PowerShell, VBScript, .NET)", "La vitesse d'affichage de la carte graphique", "La résolution maximale de l'écran principal"], ans: "0" },
+                        { q: "4. Qu'est-ce que la technique de 'Process Hollowing' ?", options: ["L'injection de code malveillant en vidant la mémoire d'un processus système légitime en cours d'exécution", "Le nettoyage de la corbeille du système", "L'optimisation des performances du processeur"], ans: "0" },
+                        { q: "5. Quel protocole réseau est au cœur absolu de l'authentification dans un domaine Windows moderne ?", options: ["Kerberos", "SMTP", "DHCP", "FTP"], ans: "0" },
+                        { q: "6. Qu'est-ce qu'une attaque de type 'Pass-the-Hash' ?", options: ["Réutiliser directement un hachage de mot de passe capturé pour s'authentifier sans avoir à le casser en clair", "Changer son mot de passe en un hashtag sur les réseaux sociaux", "Effacer complètement le cache du navigateur web"], ans: "0" }
                     ] 
                 }
             ],
@@ -113,22 +146,40 @@ const trackDB = {
             id: 201, title: "Niveau 1 : Analyse de Logs & Codes HTTP",
             themes: [
                 { 
-                    id: "b_lvl1", title: "Masterclass : Analyse Forensique des Logs Web", desc: "Guide complet (1-2 pages) : Lecture des fichiers access.log et codes de statut.", 
+                    id: "b_lvl1", title: "Masterclass : Analyse Forensique Approfondie des Logs Web", desc: "Guide complet (1-2 pages de lecture) : Lecture des fichiers access.log et interprétation des codes de statut HTTP.", 
                     content: `
-                        <h2>1. Anatomie d'un log web</h2>
-                        <p>Les journaux d'accès (access.log) enregistrent chaque requête HTTP : IP source, horodatage, méthode, URL, code de statut et taille de la réponse.</p>
-                        <h2>2. Codes HTTP clés</h2>
-                        <p><code>200 OK</code> (succès), <code>403 Forbidden</code> (accès interdit), <code>404 Not Found</code> (reconnaissance/scan), <code>500 Internal Error</code> (plantage suite à injection).</p>
+                        <h2>1. Le rôle crucial du SOC et de l'analyse des journaux</h2>
+                        <p>Lorsqu'une entreprise subit une cyberattaque, le premier réflexe de l'équipe de défense (Blue Team) et des analystes du SOC (Security Operations Center) consiste à examiner minutieusement les journaux d'événements (logs). Chaque serveur web, pare-feu, routeur ou système d'authentification consigne les faits et gestes sous forme de lignes textuelles horodatées.</p>
+                        
+                        <p>L'anatomie d'une ligne de log Apache ou Nginx standard (Common Log Format) se lit de gauche à droite :<br>
+                        <code>192.168.1.50 - - [06/Aug/2026:14:02:15 +0200] "GET /login.php?user=' OR 1=1 HTTP/1.1" 200 1024</code></p>
+                        <ul>
+                            <li><strong>192.168.1.50 :</strong> Adresse IP source de l'ordinateur qui initie la requête.</li>
+                            <li><strong>[06/Aug/... :</strong> Date et heure exactes de la transaction.</li>
+                            <li><strong>"GET /... :</strong> Méthode HTTP utilisée et ressource demandée.</li>
+                            <li><strong>200 :</strong> Code de statut HTTP renvoyé par le serveur.</li>
+                        </ul>
+
+                        <h2>2. Interprétation stratégique des codes de statut HTTP</h2>
+                        <p>Pour un analyste forensique, les codes de retour HTTP sont des indicateurs immédiats de la nature de l'activité observée :</p>
+                        <table>
+                            <tr><th>Code HTTP</th><th>Signification technique</th><th>Interprétation en cybersécurité</th></tr>
+                            <tr><td><code>200 OK</code></td><td>Requête traitée et réussie avec succès.</td><td>Normal, mais nécessite une attention si la charge utile passe dans l'URL.</td></tr>
+                            <tr><td><code>401 Unauthorized</code></td><td>Authentification obligatoire manquante.</td><td>Tentative d'accès à une zone protégée sans fournir d'identifiants.</td></tr>
+                            <tr><td><code>403 Forbidden</code></td><td>Accès refusé par la configuration du serveur.</td><td>L'attaquant liste des dossiers interdits (directory traversal / fuzzing).</td></tr>
+                            <tr><td><code>404 Not Found</code></td><td>Ressource introuvable sur le serveur.</td><td>Phase classique de reconnaissance (scan de répertoires par l'attaquant).</td></tr>
+                            <tr><td><code>500 Internal Error</code></td><td>Erreur critique interne du serveur web.</td><td>Indice fort qu'une injection SQL ou une attaque a fait crasher le script backend.</td></tr>
+                        </table>
                     `, 
                     simType: "logs", 
                     simData: { instruction: "Trouvez l'IP de l'attaquant dans les logs." }, 
                     quiz: [
-                        { q: "1. Que signifie le code HTTP 403 ?", options: ["Accès interdit / refusé", "Succès", "Redirection"], ans: "0" },
-                        { q: "2. Quelle information se trouve au début d'une ligne de log d'accès ?", options: ["L'adresse IP source", "Le nom du processeur", "La version du BIOS"], ans: "0" },
-                        { q: "3. Un code 404 massif en provenance d'une seule IP indique généralement quoi ?", options: ["Une phase de scan et de reconnaissance de dossiers", "Un téléchargement réussi", "Une mise à jour Windows"], ans: "0" },
-                        { q: "4. Quel est le rôle principal d'une équipe Blue Team ?", options: ["Surveiller, détecter et neutraliser les menaces", "Créer des virus", "Vendre des logiciels"], ans: "0" },
-                        { q: "5. Que traduit un code 500 après une injection suspecte ?", options: ["Une erreur critique du backend (souvent due à une faille)", "Une réussite totale de l'utilisateur", "Une déconnexion Wi-Fi"], ans: "0" },
-                        { q: "6. Quel protocole sécurise les communications web ?", options: ["HTTPS", "Telnet", "HTTP"], ans: "0" }
+                        { q: "1. Que signifie précisément le code de statut HTTP 403 dans un journal d'accès ?", options: ["Accès interdit / refusé par la configuration du serveur", "Succès complet de la transaction", "Redirection temporaire vers une autre page", "Erreur interne du code source PHP"], ans: "0" },
+                        { q: "2. Quelle information essentielle se trouve placée en tout début de ligne dans un log d'accès web standard ?", options: ["L'adresse IP source de l'ordinateur distant à l'origine de la requête", "Le nom complet du processeur installé sur le serveur", "La capacité totale de stockage du disque dur", "Le mot de passe chiffré de l'administrateur"], ans: "0" },
+                        { q: "3. Lorsqu'un attaquant envoie des centaines de requêtes sur des pages inexistantes (générant de multiples codes 404), à quelle phase de l'attaque cela correspond-il ?", options: ["Phase de reconnaissance, de scan et de découverte de répertoires cachés", "Phase de chiffrement des données de l'entreprise", "Phase de nettoyage des traces d'effacement", "Phase de post-exploitation active"], ans: "0" },
+                        { q: "4. Quel est le rôle principal et quotidien d'une équipe Blue Team face aux flux de journaux ?", options: ["Surveiller, corréler, détecter et neutraliser les comportements malveillants", "Modifier les logs pour effacer les preuves d'intrusion", "Pirater les infrastructures des entreprises concurrentes", "Développer des sites web commerciaux e-commerce"], ans: "0" },
+                        { q: "5. Que traduit l'apparition soudaine d'un code 500 Server Error suite à une manipulation suspecte dans un formulaire ?", options: ["Le script a planté, ce qui indique souvent une vulnérabilité logicielle ou une injection réussie", "Le serveur fonctionne de manière tout à fait normale", "L'utilisateur a fermé son navigateur web", "Le certificat SSL du site est valide"], ans: "0" },
+                        { q: "6. Quel protocole réseau assure le transport chiffré des pages web consultées sur Internet ?", options: ["HTTPS (fonctionnant sur le port TCP 443)", "Telnet (non chiffré sur le port 23)", "HTTP simple en clair", "FTP de transfert"], ans: "0" }
                     ] 
                 }
             ],
@@ -138,21 +189,21 @@ const trackDB = {
             id: 202, title: "Niveau 2 : Durcissement (Hardening) & Pare-feu",
             themes: [
                 { 
-                    id: "b_lvl2", title: "Masterclass : Sécurisation Système & Fail2Ban", desc: "Guide complet (1-2 pages) : Filtrage réseau et bannissement automatique.", 
+                    id: "b_lvl2", title: "Masterclass : Sécurisation Système & Fail2Ban", desc: "Guide complet (1-2 pages de lecture) : Filtrage réseau et bannissement automatique.", 
                     content: `
-                        <h2>1. Durcissement de l'OS</h2>
-                        <p>Le hardening consiste à réduire la surface d'attaque en fermant les ports superflus, en configurant un pare-feu strict (UFW / Iptables) et en interdisant l'authentification par mot de passe pour SSH (utilisation exclusive de clés cryptographiques).</p>
-                        <h2>2. Automatisation avec Fail2Ban</h2>
-                        <p>Fail2Ban analyse les logs en temps réel pour détecter les attaques par force brute et bannit automatiquement les adresses IP suspectes via des règles de pare-feu.</p>
+                        <h2>1. Le durcissement (Hardening) de l'OS</h2>
+                        <p>Le durcissement d'un système d'exploitation consiste à réduire drastiquement sa surface d'attaque en fermant l'ensemble des services superflus, en configurant un pare-feu strict (UFW / Iptables) et en interdisant formellement l'authentification par mot de passe pour le protocole SSH (privilégiant l'usage exclusif de paires de clés cryptographiques).</p>
+                        <h2>2. Protection automatisée avec Fail2Ban</h2>
+                        <p>Fail2Ban analyse en temps réel les journaux d'authentification pour identifier les schémas d'attaques par force brute (ex: multiples échecs SSH ou web) et applique des règles dynamiques de pare-feu pour bannir temporairement ou définitivement les adresses IP agressives.</p>
                     `, 
                     simType: "none", 
                     quiz: [
-                        { q: "1. Quel est l'objectif principal du Hardening (durcissement) d'un serveur ?", options: ["Réduire la surface d'attaque en fermant les services inutiles", "Augmenter la température du processeur", "Installer des jeux vidéo"], ans: "0" },
-                        { q: "2. Quel outil analyse les logs pour bannir automatiquement les IP agressives ?", options: ["Fail2Ban", "Photoshop", "Notepad++"], ans: "0" },
-                        { q: "3. Quelle est la meilleure pratique pour sécuriser l'accès SSH à distance ?", options: ["Utiliser des clés SSH et interdire les mots de passe en clair", "Mettre 'admin' comme mot de passe", "Laisser le port par défaut ouvert sans pare-feu"], ans: "0" },
-                        { q: "4. Que fait un pare-feu (Firewall) ? ", options: ["Filtre le trafic réseau entrant et sortant selon des règles de sécurité", "Éteint l'ordinateur en cas d'orage", "Nettoie l'écran"], ans: "0" },
-                        { q: "5. Quel port est utilisé par défaut pour le service sécurisé SSH ?", options: ["Port 22", "Port 80", "Port 21"], ans: "0" },
-                        { q: "6. Qu'est-ce qu'une règle DROP dans un pare-feu iptables ?", options: ["Ignorer et supprimer silencieusement le paquet réseau sans avertir l'expéditeur", "Accepter le paquet", "Rediriger le paquet vers un autre site"], ans: "0" }
+                        { q: "1. Quel est l'objectif principal du Hardening (durcissement) d'un serveur informatique ?", options: ["Réduire la surface d'attaque en fermant les services et ports inutiles", "Augmenter la température physique du processeur", "Installer des suites de jeux vidéo en réseau", "Supprimer le système d'exploitation"], ans: "0" },
+                        { q: "2. Quel outil standard analyse les fichiers de logs pour bannir automatiquement les IP agressives ?", options: ["Fail2Ban", "Adobe Photoshop", "Microsoft Notepad++", "VLC Media Player"], ans: "0" },
+                        { q: "3. Quelle est la meilleure pratique absolue pour sécuriser l'accès distant à un serveur via SSH ?", options: ["Utiliser des clés cryptographiques SSH et interdire les mots de passe en clair", "Mettre 'admin' comme mot de passe par défaut", "Laisser le port 22 ouvert au monde entier sans pare-feu", "Noter le mot de passe sur un post-it"], ans: "0" },
+                        { q: "4. Quelle est la fonction principale d'un pare-feu (Firewall) réseau ?", options: ["Filtrer le trafic réseau entrant et sortant selon des politiques de sécurité strictes", "Éteindre l'ordinateur en cas d'orage électrique", "Nettoyer régulièrement la poussière de l'écran", "Accélérer la connexion Wi-Fi"], ans: "0" },
+                        { q: "5. Quel numéro de port TCP est utilisé par défaut pour le service d'administration sécurisée SSH ?", options: ["Port 22", "Port 80", "Port 21", "Port 443"], ans: "0" },
+                        { q: "6. Qu'est-ce qu'une règle DROP dans la configuration d'un pare-feu iptables ?", options: ["Ignorer et supprimer silencieusement le paquet réseau sans renvoyer d'avis à l'expéditeur", "Accepter et valider le paquet", "Rediriger le paquet vers un site tiers", "Imprimer le paquet sur papier"], ans: "0" }
                     ] 
                 }
             ],
@@ -162,21 +213,21 @@ const trackDB = {
             id: 203, title: "Niveau 3 : Réponse sur Incident & SIEM",
             themes: [
                 { 
-                    id: "b_lvl3", title: "Masterclass : Corrélation d'Alertes et SIEM", desc: "Guide complet (1-2 pages) : Analyse centralisée des logs et gestion de crise.", 
+                    id: "b_lvl3", title: "Masterclass : Corrélation d'Alertes et SIEM", desc: "Guide complet (1-2 pages de lecture) : Analyse centralisée des logs et gestion de crise.", 
                     content: `
-                        <h2>1. Utilisation d'un SIEM</h2>
-                        <p>Un SIEM (Security Information and Event Management) centralise l'ensemble des logs d'un système d'information pour corréler des événements disparates et lever des alertes en temps réel.</p>
+                        <h2>1. Centralisation avec un SIEM</h2>
+                        <p>Un SIEM (Security Information and Event Management) regroupe les logs de tout le système d'information pour corréler les alertes et détecter les attaques en temps réel.</p>
                         <h2>2. Confinement d'urgence</h2>
-                        <p>Lors d'une compromission avérée, la priorité absolue de l'équipe de réponse sur incident est l'isolation physique ou logique de la machine sans couper l'alimentation électrique afin de préserver la mémoire RAM.</p>
+                        <p>Lors d'une intrusion avérée, l'équipe de réponse sur incident isole la machine infectée du réseau sans couper l'alimentation pour préserver la mémoire vive (RAM).</p>
                     `, 
                     simType: "none", 
                     quiz: [
-                        { q: "1. Que signifie l'acronyme SIEM en cybersécurité ?", options: ["Security Information and Event Management", "System Internal Error Monitor", "Secure Internet Email Message"], ans: "0" },
-                        { q: "2. Pourquoi ne doit-on pas éteindre brutalement une machine compromise lors d'un incident ?", options: ["Pour préserver l'intégrité de la mémoire vive (RAM) et des artefacts volatils", "Pour économiser de l'électricité", "Pour éviter de casser le clavier"], ans: "0" },
-                        { q: "3. Qu'est-ce qu'un Indicateur de Compromission (IoC) ?", options: ["Un artéfact (hachage, IP, nom de fichier) prouvant qu'un système a été piraté", "Un voyant lumineux sur le boîtier", "Un certificat SSL valide"], ans: "0" },
-                        { q: "4. Quelle est la première étape du cycle de réponse sur incident ?", options: ["La préparation", "L'attaque de riposte", "La vente des serveurs"], ans: "0" },
-                        { q: "5. Que mesure le temps moyen de détection (MTTD) ?", options: ["Le temps moyen mis pour découvrir une intrusion sur le réseau", "Le temps pour redémarrer un PC", "Le temps de téléchargement d'un fichier"], ans: "0" },
-                        { q: "6. Qu'est-ce que l'analyse post-mortem ?", options: ["Un rapport d'analyse détaillé réalisé après la résolution de l'incident pour éviter qu'il ne se reproduise", "Une autopsie médicale", "Un test de vitesse disque"], ans: "0" }
+                        { q: "1. Que signifie l'acronyme SIEM en cybersécurité opérationnelle ?", options: ["Security Information and Event Management", "System Internal Error Monitor", "Secure Internet Email Message", "Server Integrated Event Manager"], ans: "0" },
+                        { q: "2. Pourquoi est-il strictement interdit d'éteindre brutalement une machine compromise lors d'un incident ?", options: ["Pour préserver l'intégrité de la mémoire vive (RAM) et des artefacts volatils cruciaux", "Pour économiser l'électricité de la salle serveurs", "Pour éviter de casser le clavier physique", "Pour ne pas abîmer le ventilateur"], ans: "0" },
+                        { q: "3. Qu'est-ce qu'un Indicateur de Compromission (IoC) ?", options: ["Un artéfact (hachage, IP, nom de fichier) prouvant qu'un système a été piraté", "Un voyant lumineux clignotant sur le boîtier", "Un certificat SSL valide et certifié", "Une facture d'achat de matériel"], ans: "0" },
+                        { q: "4. Quelle est la toute première étape méthodologique du cycle de réponse sur incident ?", options: ["La préparation (Preparation)", "L'attaque de riposte offensive", "La vente des serveurs corrompus", "Le formatage complet des disques"], ans: "0" },
+                        { q: "5. Que mesure le temps moyen de détection (MTTD) dans un SOC ?", options: ["Le temps moyen mis pour découvrir une intrusion sur le réseau", "Le temps nécessaire pour redémarrer un PC", "Le temps de téléchargement d'un fichier lourd", "Le temps de pause des analystes"], ans: "0" },
+                        { q: "6. Qu'est-ce qu'un rapport d'analyse post-mortem (Root Cause Analysis) ?", options: ["Un compte-rendu détaillé réalisé après la résolution de l'incident pour comprendre l'origine et éviter qu'il ne se reproduise", "Une autopsie médicale légale", "Un test de vitesse de disque dur"], ans: "0" }
                     ] 
                 }
             ],
@@ -186,21 +237,21 @@ const trackDB = {
             id: 204, title: "Niveau 4 (Expert) : Forensics Mémoire & Threat Intelligence",
             themes: [
                 { 
-                    id: "b_lvl4", title: "Masterclass : Analyse RAM Avancée (Volatility) & YARA", desc: "Guide complet (1-2 pages) : Extraction de processus cachés et recherche de signatures de malwares.", 
+                    id: "b_lvl4", title: "Masterclass : Analyse RAM Avancée (Volatility) & YARA", desc: "Guide complet (1-2 pages de lecture) : Extraction de processus cachés et recherche de signatures de malwares.", 
                     content: `
-                        <h2>1. Analyse Forensique de la RAM</h2>
-                        <p>À l'aide d'outils comme Volatility, les experts analysent les dumps mémoire pour retrouver des connexions réseau occultes, des clés de chiffrement et des processus injectés invisibles sur le disque dur.</p>
-                        <h2>2. Signatures YARA et Threat Intelligence</h2>
-                        <p>YARA est le standard pour identifier et classifier les malwares en écrivant des règles textuelles basées sur des motifs binaires ou textuels caractéristiques.</p>
+                        <h2>1. Forensics Mémoire avec Volatility</h2>
+                        <p>L'analyse de dumps RAM permet de débusquer les rootkits et processus injectés invisibles sur le disque à l'aide de commandes comme <code>pslist</code>.</p>
+                        <h2>2. Signatures YARA</h2>
+                        <p>YARA permet de classer les malwares par reconnaissance de motifs textuels ou binaires spécifiques.</p>
                     `, 
                     simType: "none", 
                     quiz: [
-                        { q: "1. Quel framework est la référence pour l'analyse de dumps mémoire RAM ?", options: ["Volatility", "Wireshark", "Nmap"], ans: "0" },
-                        { q: "2. À quoi servent principalement les règles YARA ?", options: ["Identifier et classifier des malwares par la recherche de motifs spécifiques", "Calculer des adresses IP", "Optimiser les bases de données SQL"], ans: "0" },
-                        { q: "3. Qu'est-ce qu'un rootkit ?", options: ["Un logiciel malveillant conçu pour dissimuler sa présence et celle d'autres programmes au système", "Une application de jardinage", "Un routeur Wi-Fi professionnel"], ans: "0" },
-                        { q: "4. Que permet de détecter la commande pslist dans Volatility ?", options: ["La liste des processus actifs présents dans la mémoire au moment du dump", "La liste des utilisateurs inscrits sur le site web", "Le contenu du disque dur"], ans: "0" },
-                        { q: "5. Qu'est-ce que la Threat Intelligence ?", options: ["L'analyse et la collecte de renseignements sur les menaces et les groupes de pirates", "Un test de QI pour administrateurs", "Un pare-feu intelligent"], ans: "0" },
-                        { q: "6. Qu'est-ce qu'un fichier malveillant polymorphe ?", options: ["Un malware qui modifie son code à chaque infection pour échapper aux signatures statiques", "Un virus en plastique", "Un fichier image"], ans: "0" }
+                        { q: "1. Quel framework est la référence absolue pour l'analyse forensique de dumps mémoire RAM ?", options: ["Volatility", "Wireshark", "Nmap", "GIMP"], ans: "0" },
+                        { q: "2. À quoi servent principalement les règles YARA en cybersécurité ?", options: ["Identifier et classifier des malwares par la recherche de motifs spécifiques dans les fichiers", "Calculer des adresses IP dynamiques", "Optimiser les performances des bases de données SQL", "Dessiner des graphiques de réseau"], ans: "0" },
+                        { q: "3. Qu'est-ce qu'un rootkit au niveau système ?", options: ["Un logiciel malveillant conçu pour dissimuler sa présence et celle d'autres programmes au système d'exploitation", "Une application de jardinage sous Linux", "Un routeur Wi-Fi professionnel haut débit"], ans: "0" },
+                        { q: "4. Que permet de détecter la commande pslist dans le framework Volatility ?", options: ["La liste des processus actifs présents dans la mémoire au moment du dump", "La liste des utilisateurs inscrits sur le site web", "Le contenu complet du disque dur physique", "La configuration de la carte réseau"], ans: "0" },
+                        { q: "5. Qu'est-ce que la Threat Intelligence ?", options: ["L'analyse et la collecte de renseignements sur les menaces et les groupes de pirates informatiques", "Un test de QI obligatoire pour les administrateurs", "Un pare-feu intelligent dopé à l'IA"], ans: "0" },
+                        { q: "6. Qu'est-ce qu'un malware polymorphe ?", options: ["Un logiciel malveillant qui modifie son code à chaque infection pour échapper aux signatures statiques", "Un virus en plastique souple", "Un fichier image corrompu"], ans: "0" }
                     ] 
                 }
             ],
@@ -212,7 +263,7 @@ const trackDB = {
             id: 301, title: "Niveau 1 : Automatisation de Base en Python",
             themes: [
                 { 
-                    id: "c_lvl1", title: "Masterclass : Requêtes HTTP & Parsing en Python", desc: "Guide complet (1-2 pages) : Utilisation du module requests et manipulation de fichiers.", 
+                    id: "c_lvl1", title: "Masterclass : Requêtes HTTP & Parsing en Python", desc: "Guide complet (1-2 pages de lecture) : Utilisation du module requests et manipulation de fichiers.", 
                     content: `
                         <h2>1. Le module requests</h2>
                         <p>Python permet d'automatiser des actions web grâce à la bibliothèque <code>requests</code>. On peut envoyer des GET/POST et analyser les codes de statut instantanément.</p>
@@ -235,7 +286,7 @@ const trackDB = {
             id: 302, title: "Niveau 2 : Scanners de Ports & Bruteforce Multithread",
             themes: [
                 { 
-                    id: "c_lvl2", title: "Masterclass : Sockets et Concurrence", desc: "Guide complet (1-2 pages) : Création de scanners TCP et scripts de bruteforce rapides.", 
+                    id: "c_lvl2", title: "Masterclass : Sockets et Concurrence", desc: "Guide complet (1-2 pages de lecture) : Création de scanners TCP et scripts de bruteforce rapides.", 
                     content: `
                         <h2>1. Sockets réseau bas niveau</h2>
                         <p>La bibliothèque <code>socket</code> permet d'établir des connexions TCP brutes pour tester l'ouverture des ports sur une machine cible.</p>
@@ -259,12 +310,12 @@ const trackDB = {
             id: 303, title: "Niveau 3 : Développement de Reverse Shells & Payloads",
             themes: [
                 { 
-                    id: "c_lvl3", title: "Masterclass : Reverse Shells et Subprocess", desc: "Guide complet (1-2 pages) : Manipulation de processus et connexion inversée.", 
+                    id: "c_lvl3", title: "Masterclass : Reverse Shells et Subprocess", desc: "Guide complet (1-2 pages de lecture) : Manipulation de processus et connexion inversée.", 
                     content: `
                         <h2>1. Logique du Reverse Shell</h2>
-                        <p>Plutôt que d'attendre une connexion entrante (souvent bloquée par les routeurs et pare-feu), le script malveillant exécuté sur la victime initie une connexion sortante vers l'écouteur de l'attaquant.</p>
+                        <p>Plutôt que d'attendre une connexion entrante, le script malveillant exécuté sur la victime initie une connexion sortante vers l'écouteur de l'attaquant.</p>
                         <h2>2. Le module subprocess</h2>
-                        <p>Permet d'exécuter des commandes système directement depuis le script Python et de rediriger les flux I/O vers le socket réseau.</p>
+                        <p>Permet d'exécuter des commandes système directement depuis le script Python.</p>
                     `, 
                     simType: "none", 
                     quiz: [
@@ -283,12 +334,12 @@ const trackDB = {
             id: 304, title: "Niveau 4 (Expert) : Obfuscation & Exploits Avancés",
             themes: [
                 { 
-                    id: "c_lvl4", title: "Masterclass : Contournement EDR et Chiffrement de Payloads", desc: "Guide complet (1-2 pages) : Obfuscation de code et sockets chiffrés en Python.", 
+                    id: "c_lvl4", title: "Masterclass : Contournement EDR et Chiffrement de Payloads", desc: "Guide complet (1-2 pages de lecture) : Obfuscation de code et sockets chiffrés en Python.", 
                     content: `
                         <h2>1. Obfuscation de code</h2>
-                        <p>Pour contrer l'analyse statique des antivirus et des EDR, les scripts Python offensifs sont chiffrés ou encodés (Base64, XOR, AES) et déchiffrés dynamiquement en mémoire juste avant l'exécution.</p>
+                        <p>Pour contrer l'analyse statique des antivirus, les scripts sont chiffrés ou encodés et déchiffrés dynamiquement en mémoire.</p>
                         <h2>2. Sockets SSL/TLS</h2>
-                        <p>Encapsuler les flux du reverse shell dans une couche SSL/TLS (via le module <code>ssl</code> de Python) permet de tromper les sondes DPI (Deep Packet Inspection) du réseau.</p>
+                        <p>Encapsuler les flux du reverse shell dans du SSL/TLS (via le module <code>ssl</code>) permet de tromper les sondes DPI du réseau.</p>
                     `, 
                     simType: "none", 
                     quiz: [
@@ -309,7 +360,7 @@ const trackDB = {
             id: 401, title: "Niveau 1 : Architecture du Web et DOM",
             themes: [
                 { 
-                    id: "d_lvl1", title: "Masterclass : Fondations HTML, CSS et DOM", desc: "Guide complet (1-2 pages) : Structure des pages web et analyse du code source.", 
+                    id: "d_lvl1", title: "Masterclass : Fondations HTML, CSS et DOM", desc: "Guide complet (1-2 pages de lecture) : Structure des pages web et analyse du code source.", 
                     content: `
                         <h2>1. Le modèle DOM</h2>
                         <p>Le HTML structure la page en arborescence d'objets (DOM). Les attaquants inspectent ce code pour dénicher des commentaires oubliés ou des endpoints cachés.</p>
@@ -332,10 +383,10 @@ const trackDB = {
             id: 402, title: "Niveau 2 : Failles OWASP Top 10 (CSRF & XSS Avancé)",
             themes: [
                 { 
-                    id: "d_lvl2", title: "Masterclass : Sécurité des Formulaires et CSRF", desc: "Guide complet (1-2 pages) : Protection des sessions et usurpation de requêtes.", 
+                    id: "d_lvl2", title: "Masterclass : Sécurité des Formulaires et CSRF", desc: "Guide complet (1-2 pages de lecture) : Protection des sessions et usurpation de requêtes.", 
                     content: `
                         <h2>1. Attaque CSRF</h2>
-                        <p>Le Cross-Site Request Forgery force un utilisateur authentifié à exécuter des actions non souhaitées sur une application web tierce en exploitant sa session active.</p>
+                        <p>Le Cross-Site Request Forgery force un utilisateur authentifié à exécuter des actions non souhaitées sur une application web tierce.</p>
                     `, 
                     simType: "none", 
                     quiz: [
@@ -354,12 +405,10 @@ const trackDB = {
             id: 403, title: "Niveau 3 : Sécurité des API REST & Authentification JWT",
             themes: [
                 { 
-                    id: "d_lvl3", title: "Masterclass : Analyse et Attaques sur les JWT", desc: "Guide complet (1-2 pages) : Header, Payload, Signature et failles algorithmiques.", 
+                    id: "d_lvl3", title: "Masterclass : Analyse et Attaques sur les JWT", desc: "Guide complet (1-2 pages de lecture) : Header, Payload, Signature et failles algorithmiques.", 
                     content: `
                         <h2>1. Structure des JWT</h2>
-                        <p>Un JSON Web Token est composé de trois parties séparées par des points : Header (algorithme), Payload (données utilisateur) et Signature (vérification d'intégrité).</p>
-                        <h2>2. Vulnérabilités majeures</h2>
-                        <p>Modification de l'algorithme de signature en <code>none</code>, ou cassage de la clé secrète HMAC par force brute via des wordlists (hashcat).</p>
+                        <p>Un JSON Web Token est composé de trois parties séparées par des points : Header, Payload et Signature.</p>
                     `, 
                     simType: "none", 
                     quiz: [
@@ -378,12 +427,12 @@ const trackDB = {
             id: 404, title: "Niveau 4 (Expert) : Sécurité Cloud & Attaques SSRF Avancées",
             themes: [
                 { 
-                    id: "d_lvl4", title: "Masterclass : Server-Side Request Forgery & Cloud Metadata", desc: "Guide complet (1-2 pages) : Exploitation des services cloud et métadonnées AWS/GCP.", 
+                    id: "d_lvl4", title: "Masterclass : Server-Side Request Forgery & Cloud Metadata", desc: "Guide complet (1-2 pages de lecture) : Exploitation des services cloud et métadonnées AWS/GCP.", 
                     content: `
                         <h2>1. Server-Side Request Forgery (SSRF)</h2>
-                        <p>Une faille SSRF permet à un attaquant de forcer le serveur vulnérable à envoyer des requêtes HTTP forgées vers des services internes inaccessibles depuis l'extérieur.</p>
+                        <p>Une faille SSRF permet de forcer le serveur vulnérable à envoyer des requêtes HTTP forgées vers des services internes inaccessibles depuis l'extérieur.</p>
                         <h2>2. Exploitation des métadonnées Cloud</h2>
-                        <p>Sur AWS (<code>http://169.254.169.254/latest/meta-data/</code>), un SSRF permet de récupérer les clés d'accès IAM et de compromettre l'intégralité de l'infrastructure Cloud.</p>
+                        <p>Sur AWS (<code>http://169.254.169.254/latest/meta-data/</code>), un SSRF permet de récupérer les clés d'accès IAM et de compromettre l'infrastructure Cloud.</p>
                     `, 
                     simType: "none", 
                     quiz: [
@@ -401,7 +450,6 @@ const trackDB = {
     ]
 };
 
-// 8 CTF MASSIVEMENT ENRICHIS (Verrouillés par niveau)
 const ctfDB = [
     { id: "ctf1", title: "L'Inspecteur HTML", difficulty: "Débutant", category: "Web", points: 100, reqTrack: "dev", reqLevel: 401, desc: "Fouillez le code source du navigateur pour extraire le flag caché.", expectedFlag: "FLAG{html_source_ez}", simType: "html" },
     { id: "ctf2", title: "Bypass IDOR Admin", difficulty: "Intermédiaire", category: "Red Team", points: 250, reqTrack: "red", reqLevel: 101, desc: "Exploitez la faille IDOR pour récupérer le jeton administrateur.", expectedFlag: "FLAG{idor_admin_leak}", simType: "idor_ctf" },
