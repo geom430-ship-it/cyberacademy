@@ -13,8 +13,8 @@ code, .terminal-font { font-family: 'Courier New', Courier, monospace; color: va
 /* EFFET SCANLINES (Écran Cathodique) */
 .scanlines { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%); background-size: 100% 4px; z-index: 9999; pointer-events: none; opacity: 0.6; }
 
-/* LAYOUT AUTHENTIFICATION SPLIT-SCREEN PRO */
-.auth-container { display: flex !important; flex-direction: row; height: 100vh; padding: 0; background: #000; }
+/* LAYOUT AUTHENTIFICATION SPLIT-SCREEN PRO (Bug de superposition corrigé) */
+.auth-container { flex-direction: row; height: 100vh; padding: 0; background: #000; }
 .auth-left { flex: 1; background: linear-gradient(135deg, #0f1522 0%, #06090e 100%); display: flex; flex-direction: column; justify-content: center; padding: 50px; border-right: 1px solid var(--border); position: relative; overflow: hidden; }
 .auth-left::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, var(--accent-glow) 0%, transparent 50%); opacity: 0.1; z-index: 0; }
 .auth-branding { position: relative; z-index: 1; max-width: 500px; margin: 0 auto; }
@@ -56,7 +56,7 @@ header { background-color: var(--bg-card); border-bottom: 1px solid var(--accent
 /* VUES & CONTAINERS */
 .container { padding: 20px; max-width: 1100px; margin: 0 auto; position: relative; z-index: 10; }
 .view-section { display: none; }
-.active-view { display: block !important; animation: fadeIn 0.4s ease forwards; }
+.active-view { animation: fadeIn 0.4s ease forwards; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
 /* COMPOSANTS FORMULAIRES */
@@ -122,6 +122,7 @@ header { background-color: var(--bg-card); border-bottom: 1px solid var(--accent
 .sim-box { background: #000; border: 1px solid var(--warning); padding: 25px; border-radius: 4px; margin: 25px 0; box-shadow: inset 0 0 30px rgba(0,0,0,0.8); }
 .sim-header { color: var(--warning); font-family: monospace; font-size: 1rem; margin-bottom: 20px; border-bottom: 1px dashed #333; padding-bottom: 10px; font-weight: bold; }
 .term-input, .web-input { width: 100%; padding: 15px; background: #0a0a0a; color: var(--accent); border: 1px solid #333; border-radius: 4px; font-family: monospace; font-size: 1.1rem; outline: none; margin-bottom: 10px; }
+.term-input:focus, .web-input:focus { border-color: var(--accent); box-shadow: inset 0 0 10px rgba(16, 185, 129, 0.1); }
 .term-output { margin-top: 15px; font-family: monospace; color: #a1a1aa; white-space: pre-wrap; line-height: 1.5; font-size: 0.95rem; }
 
 .sim-blue { border-color: #3b82f6 !important; } .sim-blue .sim-header { color: #3b82f6 !important; }
