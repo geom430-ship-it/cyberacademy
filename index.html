@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CyberAcademy | Pro Environment</title>
+    <title>CyberAcademy | Plateforme Pro</title>
     <style>
         :root {
             --bg-main: #060913; --bg-card: #0f172a; --bg-card-hover: #1e293b;
@@ -15,50 +15,65 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { background-color: var(--bg-main); color: var(--text-main); line-height: 1.6; overflow-x: hidden; }
-        code, .terminal-font { font-family: 'Courier New', Courier, monospace; }
 
-        /* HEADER */
+        /* --- HEADER & MENU HAMBURGER --- */
         header { 
             background-color: var(--bg-card); border-bottom: 1px solid var(--border); 
             padding: 15px 20px; display: none; 
             justify-content: space-between; align-items: center; 
             position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            flex-wrap: wrap; gap: 10px;
         }
         header.visible { display: flex; }
-        .logo { font-size: 1.5rem; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; }
+        .logo { font-size: 1.4rem; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; }
         .logo span { color: var(--accent); }
-        .progress-container { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-        .rank-badge { background: rgba(16, 185, 129, 0.1); color: var(--accent); padding: 4px 10px; border-radius: 4px; border: 1px solid var(--accent); font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
-        .score { font-family: 'Courier New', monospace; font-weight: bold; font-size: 1rem; background: #000; padding: 4px 8px; border-radius: 4px; border: 1px solid #333; }
-        .user-name { color: var(--text-muted); font-size: 0.9rem; font-weight: bold; }
-        .btn-logout { background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; transition: 0.2s; }
-        .btn-logout:hover { background: var(--danger); color: #fff; }
+        
+        .hamburger-btn { background: transparent; border: none; color: var(--text-main); font-size: 1.8rem; cursor: pointer; display: flex; align-items: center; padding: 0 10px; }
+        .hamburger-btn:hover { color: var(--accent); }
+
+        /* --- SIDEBAR (MENU COULISSANT) --- */
+        .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); z-index: 999; display: none; opacity: 0; transition: opacity 0.3s; }
+        .sidebar-overlay.active { display: block; opacity: 1; }
+        
+        .sidebar { position: fixed; top: 0; right: -300px; width: 280px; height: 100vh; background: var(--bg-card); z-index: 1000; transition: right 0.3s ease; box-shadow: -5px 0 20px rgba(0,0,0,0.8); display: flex; flex-direction: column; }
+        .sidebar.open { right: 0; }
+        
+        .sidebar-header { padding: 25px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .sidebar-header h2 { font-size: 1.2rem; color: var(--accent); }
+        .close-btn { background: transparent; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; }
+        
+        .sidebar-profile { padding: 20px; background: rgba(0,0,0,0.2); border-bottom: 1px solid var(--border); }
+        .user-name { font-size: 1.1rem; font-weight: bold; margin-bottom: 5px; display: block; }
+        .rank-badge { background: rgba(16, 185, 129, 0.1); color: var(--accent); padding: 4px 10px; border-radius: 4px; border: 1px solid var(--accent); font-size: 0.75rem; font-weight: bold; text-transform: uppercase; display: inline-block; margin-bottom: 5px; }
+        .score { font-family: monospace; font-weight: bold; font-size: 0.9rem; color: var(--warning); }
+
+        .sidebar-menu { flex-grow: 1; padding: 20px 0; }
+        .menu-item { display: block; padding: 15px 20px; color: var(--text-main); text-decoration: none; font-weight: bold; border-left: 3px solid transparent; cursor: pointer; transition: 0.2s; }
+        .menu-item:hover { background: rgba(255,255,255,0.05); border-left-color: var(--accent); color: var(--accent); }
+        .menu-item.logout { color: var(--danger); margin-top: auto; border-top: 1px solid var(--border); }
+        .menu-item.logout:hover { border-left-color: var(--danger); color: var(--danger); }
 
         .container { padding: 20px; max-width: 1000px; margin: 0 auto; }
 
-        /* VUES */
+        /* --- VUES (Système d'affichage) --- */
         .view-section { display: none; animation: fadeIn 0.3s ease; }
         .active-view { display: block !important; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
         /* --- AUTH VIEW (Login / Register) --- */
         #auth-view { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; background: #000; }
-        .auth-box { background: var(--bg-card); padding: 30px; border-radius: 12px; border: 1px solid var(--accent); width: 100%; max-width: 400px; text-align: center; box-shadow: 0 0 30px var(--accent-glow); }
+        .auth-box { background: var(--bg-card); padding: 30px; border-radius: 12px; border: 1px solid var(--border); width: 100%; max-width: 400px; text-align: center; box-shadow: 0 0 30px rgba(0,0,0,0.8); }
         .auth-box h1 { color: #fff; margin-bottom: 5px; font-size: 1.8rem; }
         .auth-box h1 span { color: var(--accent); }
         .auth-box p { color: var(--text-muted); margin-bottom: 25px; font-size: 0.9rem; }
         
-        /* Onglets de connexion fixés pour le tactile */
         .auth-tabs { display: flex; margin-bottom: 20px; border-radius: 6px; overflow: hidden; border: 1px solid var(--border); }
-        .auth-tab { flex: 1; padding: 12px; background: #000; color: var(--text-muted); cursor: pointer; font-size: 0.95rem; font-weight: bold; border: none; outline: none; }
+        .auth-tab { flex: 1; padding: 12px; background: #000; color: var(--text-muted); cursor: pointer; font-size: 0.95rem; font-weight: bold; border: none; outline: none; transition: 0.2s; }
         .auth-tab.active { background: var(--accent); color: #000; }
         
         .auth-input { width: 100%; padding: 12px; background: #000; border: 1px solid var(--border); color: #fff; border-radius: 6px; margin-bottom: 15px; font-family: monospace; font-size: 1rem; text-align: center; outline: none; transition: 0.2s; }
         .auth-input:focus { border-color: var(--accent); box-shadow: 0 0 10px var(--accent-glow); }
         .auth-btn { background: var(--accent); color: #000; border: none; padding: 14px; width: 100%; font-weight: bold; font-size: 1rem; border-radius: 6px; cursor: pointer; text-transform: uppercase; transition: 0.2s; margin-top: 10px; }
         .auth-btn:hover { background: #059669; }
-        .auth-btn:active { transform: scale(0.98); }
         
         #auth-msg { margin-top: 15px; font-size: 0.9rem; font-weight: bold; padding: 10px; border-radius: 6px; display: none; }
 
@@ -83,14 +98,13 @@
         .exam-btn:hover { background: var(--danger); color: #fff; }
 
         /* --- COURS & SIMULATEURS --- */
-        .btn-back { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border); padding: 10px 15px; border-radius: 6px; cursor: pointer; margin-bottom: 20px; font-size: 0.9rem; font-weight: bold; }
         .content-box { background: var(--bg-card); padding: 25px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 20px; }
         .content-box h2 { color: var(--accent); margin-bottom: 15px; }
         
         .sim-box { background: #000; border: 1px solid var(--warning); padding: 20px; border-radius: 8px; margin: 20px 0; }
         .sim-header { color: var(--warning); font-family: monospace; font-size: 0.9rem; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 5px; }
         .term-input, .web-input { width: 100%; padding: 12px; background: #111; color: #fff; border: 1px solid #333; border-radius: 6px; font-family: monospace; font-size: 1rem; outline: none; margin-bottom: 10px; }
-        .term-input:focus, .web-input:focus { border-color: var(--accent); }
+        .term-input:focus, .web-input:focus { border-color: var(--warning); }
         .term-output { margin-top: 10px; font-family: monospace; color: #a1a1aa; white-space: pre-line; font-size: 0.9rem; }
 
         /* --- QCM --- */
@@ -103,54 +117,67 @@
 </head>
 <body>
 
+    <!-- OVERLAY POUR LE MENU LATÉRAL -->
+    <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+    <!-- MENU LATÉRAL (SIDEBAR) -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>MENU</h2>
+            <button class="close-btn" onclick="toggleSidebar()">✕</button>
+        </div>
+        <div class="sidebar-profile">
+            <span class="user-name" id="sidebar-user">@User</span>
+            <div id="sidebar-rank" class="rank-badge">Recrue</div>
+            <div id="sidebar-points" class="score">000 PTS</div>
+        </div>
+        <div class="sidebar-menu">
+            <a class="menu-item" onclick="showDashboard(); toggleSidebar();">🎓 Parcours d'apprentissage</a>
+            <a class="menu-item logout" onclick="logout(); toggleSidebar();">🚪 Se déconnecter</a>
+        </div>
+    </nav>
+
     <!-- VUE AUTHENTIFICATION -->
     <div id="auth-view" class="view-section active-view">
         <div class="auth-box">
             <h1>Cyber<span>Academy</span></h1>
-            <p>Plateforme Cloudflare active</p>
+            <p>Authentification chiffrée requise</p>
             
             <div class="auth-tabs">
-                <button class="auth-tab active" id="tab-login" onclick="switchAuthMode('login')">Se connecter</button>
-                <button class="auth-tab" id="tab-register" onclick="switchAuthMode('register')">Créer un compte</button>
+                <button class="auth-tab active" id="tab-login" onclick="switchAuthMode('login')">Connexion</button>
+                <button class="auth-tab" id="tab-register" onclick="switchAuthMode('register')">S'inscrire</button>
             </div>
 
-            <input type="text" id="auth-user" class="auth-input" placeholder="Pseudo" autocomplete="off">
+            <input type="text" id="auth-user" class="auth-input" placeholder="Identifiant" autocomplete="off">
             <input type="password" id="auth-pass" class="auth-input" placeholder="Mot de passe" onkeypress="handleAuthEnter(event)">
             
-            <button class="auth-btn" id="auth-btn-action" onclick="processAuth()">Connexion</button>
+            <button class="auth-btn" id="auth-btn-action" onclick="processAuth()">Accéder</button>
             <div id="auth-msg"></div>
         </div>
     </div>
 
-    <!-- EN-TÊTE PRINCIPAL -->
+    <!-- EN-TÊTE PRINCIPAL (Visible uniquement connecté) -->
     <header id="main-header">
         <div class="logo">Cyber<span>Academy</span></div>
-        <div class="progress-container">
-            <span class="user-name" id="display-user">@User</span>
-            <div id="user-rank" class="rank-badge">Recrue</div>
-            <div id="user-points" class="score">000 PTS</div>
-            <button class="btn-logout" onclick="logout()">Déconnexion</button>
-        </div>
+        <button class="hamburger-btn" onclick="toggleSidebar()">☰</button>
     </header>
 
     <div class="container">
-        
         <!-- DASHBOARD -->
         <div id="dashboard-view" class="view-section">
             <div class="content-box" style="margin-bottom: 30px;">
                 <h2 style="color: #fff;">Parcours : Pentester Débutant</h2>
-                <p>Validez les modules et l'examen final d'un niveau pour débloquer le suivant.</p>
+                <p>Suivez les modules pour apprendre les bases de la cybersécurité. Validations requises.</p>
             </div>
             <div id="levels-container"></div>
         </div>
 
         <!-- THEME VIEW -->
         <div id="theme-view" class="view-section">
-            <button class="btn-back" onclick="showDashboard()">← Retour au Parcours</button>
             <div class="content-box" id="lesson-content"></div>
             <div id="simulator-container"></div>
             <div class="content-box">
-                <h3 style="color: var(--accent); margin-bottom:15px;">Questionnaire de validation</h3>
+                <h3 style="color: var(--accent); margin-bottom:15px;">Évaluation d'audit</h3>
                 <div id="quiz-content"></div>
                 <button class="btn-submit" onclick="submitThemeQCM()">Valider le module</button>
                 <div id="quiz-result"></div>
@@ -159,7 +186,6 @@
 
         <!-- EXAM VIEW -->
         <div id="exam-view" class="view-section">
-            <button class="btn-back" onclick="showDashboard()">← Retour</button>
             <div class="content-box" style="border-color: var(--danger);">
                 <h2 style="color: var(--danger);">EXAMEN FINAL DU NIVEAU</h2>
                 <div id="exam-content" style="margin-top: 20px;"></div>
@@ -167,79 +193,99 @@
                 <div id="exam-result"></div>
             </div>
         </div>
-
     </div>
 
     <script>
-        // --- BASE DE DONNÉES DES COURS ---
+        // --- BASE DE DONNÉES ENRICHIE ---
         const db = [
             {
-                id: 1, title: "Niveau 1 : Reconnaissance Linux",
+                id: 1, title: "Niveau 1 : Reconnaissance & Bases",
                 themes: [
                     {
                         id: "t1_linux", title: "Naviguer dans le terminal", desc: "Trouver les fichiers cachés du système.",
-                        content: `<h2>Système de fichiers</h2><p>Les fichiers cachés sous Linux commencent toujours par un point (ex: <code>.bashrc</code>).</p>`,
+                        content: `<h2>Système de fichiers</h2><p>Le terminal Linux est l'outil de base du hacker. Les fichiers sensibles sont souvent masqués par les administrateurs en rajoutant un simple point au début du nom de fichier (ex: <code>.secret</code>).</p>`,
                         simType: "terminal",
-                        simData: { expected: "ls -a", successOutput: "[OK] Fichier trouvé : .secret_flag\nContenu : FLAG{term_nav_01}" },
+                        simData: { expected: "ls -a", successOutput: "[OK] Fichier caché détecté : .conf_pass\nContenu extrait : FLAG{term_nav_01}" },
                         quiz: [
-                            { q: "Quelle commande as-tu utilisée dans le simulateur ?", options: ["ls", "ls -a", "pwd"], ans: 1 },
-                            { q: "Quel est le FLAG secret découvert ?", options: ["FLAG{hidden}", "FLAG{term_nav_01}", "FLAG{admin}"], ans: 1 }
+                            { q: "Quelle commande permet de lister TOUS les fichiers (même cachés) ?", options: ["ls", "ls -a", "pwd", "cd"], ans: "1" },
+                            { q: "Quel est le FLAG secret découvert dans le simulateur ?", options: ["FLAG{hidden}", "FLAG{term_nav_01}", "FLAG{linux}"], ans: "1" }
                         ]
                     },
                     {
-                        id: "t1_net", title: "Bases du Réseau", desc: "Comprendre les ports.",
-                        content: `<h2>Ports et Services</h2><p>Le port HTTP par défaut est le 80, et le HTTPS (sécurisé) est le 443.</p>`,
+                        id: "t1_net", title: "Protocoles Réseau", desc: "Comprendre les ports et le chiffrement.",
+                        content: `<h2>Ports et Services</h2><p>Un réseau informatique est comme une maison avec des milliers de portes (les ports). Le web non sécurisé passe par la porte 80 (HTTP). Si les données sont chiffrées (HTTPS), elles passent par la porte 443.</p>`,
                         simType: "none",
                         quiz: [
-                            { q: "Quel port est utilisé pour le trafic web chiffré (HTTPS) ?", options: ["Port 80", "Port 21", "Port 443"], ans: 2 }
+                            { q: "Quel port est utilisé pour le trafic web chiffré (HTTPS) ?", options: ["Port 80", "Port 21", "Port 443"], ans: "2" }
+                        ]
+                    },
+                    {
+                        id: "t1_osint", title: "OSINT (Renseignement)", desc: "L'art de trouver des infos publiques.",
+                        content: `<h2>Open Source Intelligence</h2><p>L'OSINT consiste à fouiller les informations librement accessibles sur Internet (Réseaux sociaux, annuaires, moteurs de recherche) pour profiler une cible avant même de toucher à son système.</p>`,
+                        simType: "none",
+                        quiz: [
+                            { q: "Que signifie OSINT ?", options: ["Offensive Security Intelligence", "Open Source Intelligence", "Operating System Interception"], ans: "1" }
                         ]
                     }
                 ],
                 exam: [
-                    { q: "Comment rendre un fichier invisible sous Linux par défaut ?", options: ["Le mettre dans /root", "Commencer son nom par un point (.)"], ans: 1 }
+                    { q: "Comment rendre un fichier invisible sous Linux par défaut ?", options: ["Le mettre dans /root", "Commencer son nom par un point (.)", "Le chiffrer"], ans: "1" },
+                    { q: "Quelle est l'utilité principale de l'OSINT ?", options: ["Faire planter un serveur", "Récolter des informations publiques sur une cible", "Créer un virus"], ans: "1" }
                 ]
             },
             {
-                id: 2, title: "Niveau 2 : Attaques Web",
+                id: 2, title: "Niveau 2 : Attaques & Failles Web",
                 themes: [
                     {
-                        id: "t2_sqli", title: "Injection SQL (Bypass)", desc: "Contourner un login.",
-                        content: `<h2>Injection SQL</h2><p>Si tu ajoutes <code>' OR 1=1 --</code> au mot de passe, tu crées une logique toujours vraie.</p>`,
+                        id: "t2_sqli", title: "Injection SQL (Bypass)", desc: "Contourner un login sans mot de passe.",
+                        content: `<h2>Injection SQL</h2><p>Si la base de données est mal protégée, on peut manipuler la requête. En tapant <code>' OR 1=1 --</code>, on dit à la base : 'Le mot de passe est vide, OU 1 est égal à 1'. Comme 1 est toujours égal à 1, la base autorise l'accès.</p>`,
                         simType: "sqli",
                         quiz: [
-                            { q: "Que permet l'injection SQL ici ?", options: ["Se connecter sans mot de passe", "Faire planter le PC"], ans: 0 },
-                            { q: "Quel FLAG as-tu obtenu ?", options: ["FLAG{sqli_bypass}", "FLAG{hack_db}"], ans: 0 }
+                            { q: "Que permet l'injection SQL dans ce scénario ?", options: ["Se connecter sans mot de passe", "Faire planter le PC", "Chiffrer les données"], ans: "0" },
+                            { q: "Quel FLAG as-tu obtenu dans le simulateur ?", options: ["FLAG{sqli_bypass}", "FLAG{hack_db}"], ans: "0" }
+                        ]
+                    },
+                    {
+                        id: "t2_idor", title: "Faille IDOR", desc: "Manipulation de références directes.",
+                        content: `<h2>Insecure Direct Object Reference</h2><p>L'IDOR se produit quand une application ne vérifie pas tes droits d'accès. Si l'URL de ta facture est <code>api.com/doc?id=50</code>, que se passe-t-il si tu modifies le chiffre pour <code>id=1</code> (qui appartient à l'Admin) ?</p>`,
+                        simType: "idor",
+                        quiz: [
+                            { q: "Quelle est la cible principale de la faille IDOR ?", options: ["La base de données MySQL", "Les paramètres de l'URL ou de la requête", "Le mot de passe du WiFi"], ans: "1" },
+                            { q: "Quel est le FLAG de l'administrateur trouvé dans le simulateur ?", options: ["FLAG{idor_master}", "FLAG{admin_doc}", "FLAG{secret}"], ans: "0" }
                         ]
                     }
                 ],
                 exam: [
-                    { q: "Où s'exécute la requête SQL ?", options: ["Dans le navigateur", "Sur le serveur de base de données"], ans: 1 }
+                    { q: "Où s'exécute la requête SQL ?", options: ["Dans le navigateur", "Sur le serveur de base de données"], ans: "1" },
+                    { q: "Modifier un paramètre comme '?user_id=' pour voir le compte d'un autre est une faille :", options: ["IDOR", "XSS", "SQLi"], ans: "0" }
                 ]
             }
         ];
 
-        // --- GESTION DES COMPTES ULTRA SÉCURISÉE (ANTI-CRASH) ---
+        // --- GESTION DES SESSIONS & SÉCURITÉ BASIQUE ---
         let accounts = {};
         let activeUser = null;
-        let state = { completedThemes: [], completedExams: [], currentTheme: null, currentLevel: null };
+        let state = { completedThemes: [], completedExams: [] };
         let authMode = 'login'; 
 
-        // Fonction d'initialisation sécurisée
         function initApp() {
             try {
-                const storedDB = localStorage.getItem('cyberacademy_db_v3');
+                const storedDB = localStorage.getItem('cybersec_db_v4');
                 if (storedDB) accounts = JSON.parse(storedDB);
                 
-                const session = localStorage.getItem('cyberacademy_session_v3');
+                const session = localStorage.getItem('cybersec_session_v4');
                 if (session && accounts[session]) {
                     loginUser(session);
                 }
             } catch(e) {
-                console.error("Sauvegarde corrompue réparée automatiquement.");
                 accounts = {};
-                localStorage.setItem('cyberacademy_db_v3', '{}');
-                localStorage.removeItem('cyberacademy_session_v3');
             }
+        }
+
+        // Sidebar logic
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('overlay').classList.toggle('active');
         }
 
         // --- AUTHENTIFICATION ---
@@ -262,6 +308,9 @@
             msgBox.innerText = msg;
         }
 
+        // Obfuscation légère du mot de passe (Base64)
+        function hashPass(pwd) { return btoa(pwd); }
+
         function processAuth() {
             const user = document.getElementById('auth-user').value.trim();
             const pass = document.getElementById('auth-pass').value.trim();
@@ -275,17 +324,15 @@
                 if (accounts[user]) {
                     showAuthMessage("Ce pseudo est déjà pris. Connectez-vous.", true);
                 } else {
-                    accounts[user] = { password: pass, completedThemes: [], completedExams: [] };
-                    try {
-                        localStorage.setItem('cyberacademy_db_v3', JSON.stringify(accounts));
-                    } catch(e) { /* Mode navigation privée strict */ }
-                    showAuthMessage("Compte créé avec succès ! Connexion...", false);
+                    accounts[user] = { passHash: hashPass(pass), completedThemes: [], completedExams: [] };
+                    localStorage.setItem('cybersec_db_v4', JSON.stringify(accounts));
+                    showAuthMessage("Compte créé ! Connexion...", false);
                     setTimeout(() => loginUser(user), 1000);
                 }
             } else { // Login
                 if (!accounts[user]) {
-                    showAuthMessage("Compte introuvable. Cliquez sur 'Créer un compte'.", true);
-                } else if (accounts[user].password === pass) {
+                    showAuthMessage("Compte introuvable.", true);
+                } else if (accounts[user].passHash === hashPass(pass)) {
                     loginUser(user);
                 } else {
                     showAuthMessage("Mot de passe incorrect.", true);
@@ -295,25 +342,24 @@
 
         function loginUser(username) {
             activeUser = username;
-            try { localStorage.setItem('cyberacademy_session_v3', username); } catch(e) {}
-            
+            localStorage.setItem('cybersec_session_v4', username);
             state.completedThemes = accounts[username].completedThemes || [];
             state.completedExams = accounts[username].completedExams || [];
             
-            document.getElementById('auth-user').value = '';
-            document.getElementById('auth-pass').value = '';
-            
+            document.getElementById('auth-user').value = ''; document.getElementById('auth-pass').value = '';
             document.getElementById('auth-view').classList.remove('active-view');
             document.getElementById('main-header').classList.add('visible');
-            document.getElementById('display-user').innerText = "@" + username;
-            document.getElementById('dashboard-view').classList.add('active-view');
             
+            // Mise à jour de la sidebar
+            document.getElementById('sidebar-user').innerText = "@" + username;
+            
+            document.getElementById('dashboard-view').classList.add('active-view');
             renderDashboard();
         }
 
         function logout() {
             activeUser = null;
-            try { localStorage.removeItem('cyberacademy_session_v3'); } catch(e) {}
+            localStorage.removeItem('cybersec_session_v4');
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active-view'));
             document.getElementById('main-header').classList.remove('visible');
             document.getElementById('auth-view').classList.add('active-view');
@@ -324,21 +370,19 @@
             if (activeUser && accounts[activeUser]) {
                 accounts[activeUser].completedThemes = state.completedThemes;
                 accounts[activeUser].completedExams = state.completedExams;
-                try { localStorage.setItem('cyberacademy_db_v3', JSON.stringify(accounts)); } catch(e) {}
+                localStorage.setItem('cybersec_db_v4', JSON.stringify(accounts));
             }
             updateUserProfile();
         }
 
-        // --- DASHBOARD & LOGIQUE ---
-        // Le reste de la logique (chargement, simulateurs, QCM, examens) reste identique mais utilise la sauvegarde réparée.
-        
+        // --- DASHBOARD ---
         function updateUserProfile() {
             let pts = (state.completedThemes.length * 50) + (state.completedExams.length * 200);
-            document.getElementById('user-points').innerText = pts.toString().padStart(3, '0') + " PTS";
+            document.getElementById('sidebar-points').innerText = pts.toString().padStart(3, '0') + " PTS";
             let rank = "Recrue";
             if(pts >= 100) rank = "Initié";
             if(pts >= 300) rank = "Opérateur";
-            document.getElementById('user-rank').innerText = rank;
+            document.getElementById('sidebar-rank').innerText = rank;
         }
 
         function renderDashboard() {
@@ -357,11 +401,7 @@
                     const isDone = state.completedThemes.includes(theme.id);
                     if(!isDone) allThemesDone = false;
                     const cardClass = "theme-card " + (isDone ? 'completed' : '') + (!unlocked ? ' disabled' : '');
-                    themesHTML += `
-                        <div class="${cardClass}" onclick="openTheme('${theme.id}', ${unlocked})">
-                            <div class="theme-title">${theme.title}</div>
-                            <div class="theme-desc">${theme.desc}</div>
-                        </div>`;
+                    themesHTML += `<div class="${cardClass}" onclick="openTheme('${theme.id}', ${unlocked})"><div class="theme-title">${theme.title}</div><div class="theme-desc">${theme.desc}</div></div>`;
                 });
 
                 let examBtnHTML = '';
@@ -378,35 +418,43 @@
             });
         }
 
+        // --- MODULES & SIMULATEURS ---
         function openTheme(themeId, isUnlocked) {
             if (!isUnlocked) return;
-            db.forEach(l => l.themes.forEach(t => { if (t.id === themeId) state.currentTheme = t; }));
+            let currentTheme = null;
+            db.forEach(l => l.themes.forEach(t => { if (t.id === themeId) currentTheme = t; }));
+            document.getElementById('theme-view').dataset.themeId = themeId;
+            
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active-view'));
             document.getElementById('theme-view').classList.add('active-view');
             window.scrollTo(0,0);
-            document.getElementById('lesson-content').innerHTML = state.currentTheme.content;
+            
+            document.getElementById('lesson-content').innerHTML = currentTheme.content;
             
             const simContainer = document.getElementById('simulator-container');
-            if (state.currentTheme.simType === "terminal") {
-                simContainer.innerHTML = `<div class="sim-box"><div class="sim-header">💻 Objectif : Liste les fichiers cachés</div><input type="text" id="term-input" class="term-input" placeholder="Taper la commande..." autocomplete="off" onkeypress="handleTerm(event, '${state.currentTheme.simData.expected}')"><div id="term-output" class="term-output">En attente de commande...</div></div>`;
-            } else if (state.currentTheme.simType === "sqli") {
-                simContainer.innerHTML = `<div class="sim-box"><div class="sim-header">⚙️ Bypass le mot de passe Admin</div><input type="text" class="web-input" value="admin" disabled><input type="text" id="sql-input" class="web-input" placeholder="Mot de passe (' OR 1=1 --)" oninput="checkSQL()"><div id="sql-output" class="term-output">Accès verrouillé.</div></div>`;
+            if (currentTheme.simType === "terminal") {
+                simContainer.innerHTML = `<div class="sim-box"><div class="sim-header">💻 Objectif : Fichiers cachés</div><input type="text" id="term-input" class="term-input" placeholder="root@hacker:~#" autocomplete="off" onkeypress="handleTerm(event, '${btoa(currentTheme.simData.expected)}')"><div id="term-output" class="term-output">En attente de commande...</div></div>`;
+            } else if (currentTheme.simType === "sqli") {
+                simContainer.innerHTML = `<div class="sim-box"><div class="sim-header">⚙️ Bypass SQL Admin</div><input type="text" class="web-input" value="admin" disabled><input type="text" id="sql-input" class="web-input" placeholder="Mot de passe..." oninput="checkSQL()"><div id="sql-output" class="term-output">Accès verrouillé.</div></div>`;
+            } else if (currentTheme.simType === "idor") {
+                simContainer.innerHTML = `<div class="sim-box"><div class="sim-header">🌐 Exploitation d'API (IDOR)</div><p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:10px;">URL: https://api.site.com/get_doc?user_id=</p><input type="number" id="idor-input" class="web-input" value="50" oninput="checkIDOR()"><div id="idor-output" class="term-output">Document Facture_50.pdf (Toi)</div></div>`;
             } else { simContainer.innerHTML = ''; }
 
             let quizHTML = '';
-            state.currentTheme.quiz.forEach((q, qIndex) => {
+            currentTheme.quiz.forEach((q, qIndex) => {
                 let optionsHTML = '';
-                q.options.forEach((opt, optIndex) => { optionsHTML += `<label><input type="radio" name="q_${qIndex}" value="${optIndex}"> ${opt}</label>`; });
+                q.options.forEach((opt, optIndex) => { optionsHTML += `<label><input type="radio" name="q_${qIndex}" value="${btoa(optIndex.toString())}"> ${opt}</label>`; });
                 quizHTML += `<div style="margin-bottom:20px;"><p style="font-weight:bold; margin-bottom:10px; color:#fff;">${q.q}</p><div>${optionsHTML}</div></div>`;
             });
             document.getElementById('quiz-content').innerHTML = quizHTML;
             document.getElementById('quiz-result').style.display = 'none';
         }
 
-        function handleTerm(e, expected) {
+        // Logique Simulateurs
+        function handleTerm(e, expectedHash) {
             if (e.key === 'Enter') {
                 const val = e.target.value.trim().toLowerCase();
-                if (val === expected) document.getElementById('term-output').innerHTML = "<span style='color:var(--accent);'>" + state.currentTheme.simData.successOutput + "</span>";
+                if (btoa(val) === expectedHash) document.getElementById('term-output').innerHTML = "<span style='color:var(--accent);'>[OK] Fichier caché détecté : .conf_pass<br>Contenu : FLAG{term_nav_01}</span>";
                 else document.getElementById('term-output').innerHTML = `<span style='color:var(--danger);'>bash: ${val}: command not found</span>`;
             }
         }
@@ -415,22 +463,34 @@
             if (val.includes("' OR 1=1")) document.getElementById('sql-output').innerHTML = "<span style='color:var(--accent);'>[BYPASS RÉUSSI] Ton FLAG : FLAG{sqli_bypass}</span>";
             else document.getElementById('sql-output').innerHTML = "Accès verrouillé.";
         }
+        function checkIDOR() {
+            const val = document.getElementById('idor-input').value;
+            const out = document.getElementById('idor-output');
+            if (val === "1" || val === "0") out.innerHTML = "<span style='color:var(--accent); font-weight:bold;'>[ ACCÈS ADMIN AUTORISÉ ] Ton FLAG : FLAG{idor_master}</span>";
+            else if (val === "50") out.innerHTML = "Document Facture_50.pdf (Toi)";
+            else out.innerHTML = "<span style='color:var(--danger);'>Erreur 404 : Document introuvable.</span>";
+        }
 
         function submitThemeQCM() {
+            const themeId = document.getElementById('theme-view').dataset.themeId;
+            let currentTheme = null;
+            db.forEach(l => l.themes.forEach(t => { if (t.id === themeId) currentTheme = t; }));
+
             let allCorrect = true;
-            state.currentTheme.quiz.forEach((q, index) => {
+            currentTheme.quiz.forEach((q, index) => {
                 const inputs = document.getElementsByName('q_' + index);
                 let selectedVal = null;
-                for(let i=0; i<inputs.length; i++) { if(inputs[i].checked) selectedVal = parseInt(inputs[i].value); }
-                if (selectedVal !== q.ans) allCorrect = false;
+                for(let i=0; i<inputs.length; i++) { if(inputs[i].checked) selectedVal = inputs[i].value; }
+                if (selectedVal !== btoa(q.ans)) allCorrect = false;
             });
+            
             const resBox = document.getElementById('quiz-result');
             resBox.style.display = 'block';
             if (allCorrect) {
                 resBox.className = 'res-success';
                 resBox.style.background = 'rgba(16, 185, 129, 0.2)'; resBox.style.color = 'var(--accent)'; resBox.style.border = '1px solid var(--accent)';
                 resBox.innerText = "[+] Validé ! Retour au dashboard...";
-                if (!state.completedThemes.includes(state.currentTheme.id)) { state.completedThemes.push(state.currentTheme.id); saveProgress(); }
+                if (!state.completedThemes.includes(themeId)) { state.completedThemes.push(themeId); saveProgress(); }
                 setTimeout(showDashboard, 1500);
             } else {
                 resBox.className = 'res-error';
@@ -439,15 +499,20 @@
             }
         }
 
+        // --- EXAMEN ---
         function openExam(levelId) {
-            db.forEach(l => { if (l.id === levelId) state.currentLevel = l; });
+            document.getElementById('exam-view').dataset.levelId = levelId;
+            let currentLevel = null;
+            db.forEach(l => { if (l.id === levelId) currentLevel = l; });
+            
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active-view'));
             document.getElementById('exam-view').classList.add('active-view');
             window.scrollTo(0,0);
+            
             let examHTML = '';
-            state.currentLevel.exam.forEach((q, qIndex) => {
+            currentLevel.exam.forEach((q, qIndex) => {
                 let optionsHTML = '';
-                q.options.forEach((opt, optIndex) => { optionsHTML += `<label><input type="radio" name="e_${qIndex}" value="${optIndex}"> ${opt}</label>`; });
+                q.options.forEach((opt, optIndex) => { optionsHTML += `<label><input type="radio" name="e_${qIndex}" value="${btoa(optIndex.toString())}"> ${opt}</label>`; });
                 examHTML += `<div style="margin-bottom:20px;"><p style="font-weight:bold; margin-bottom:10px; color:#fff;">${q.q}</p><div>${optionsHTML}</div></div>`;
             });
             document.getElementById('exam-content').innerHTML = examHTML;
@@ -455,20 +520,25 @@
         }
 
         function submitExam() {
+            const levelId = parseInt(document.getElementById('exam-view').dataset.levelId);
+            let currentLevel = null;
+            db.forEach(l => { if (l.id === levelId) currentLevel = l; });
+
             let allCorrect = true;
-            state.currentLevel.exam.forEach((q, index) => {
+            currentLevel.exam.forEach((q, index) => {
                 const inputs = document.getElementsByName('e_' + index);
                 let selectedVal = null;
-                for(let i=0; i<inputs.length; i++) { if(inputs[i].checked) selectedVal = parseInt(inputs[i].value); }
-                if (selectedVal !== q.ans) allCorrect = false;
+                for(let i=0; i<inputs.length; i++) { if(inputs[i].checked) selectedVal = inputs[i].value; }
+                if (selectedVal !== btoa(q.ans)) allCorrect = false;
             });
+            
             const resBox = document.getElementById('exam-result');
             resBox.style.display = 'block';
             if (allCorrect) {
                 resBox.className = 'res-success';
                 resBox.style.background = 'rgba(16, 185, 129, 0.2)'; resBox.style.color = 'var(--accent)'; resBox.style.border = '1px solid var(--accent)';
                 resBox.innerText = "EXAMEN RÉUSSI !";
-                if (!state.completedExams.includes(state.currentLevel.id)) { state.completedExams.push(state.currentLevel.id); saveProgress(); }
+                if (!state.completedExams.includes(levelId)) { state.completedExams.push(levelId); saveProgress(); }
                 setTimeout(showDashboard, 1500);
             } else {
                 resBox.className = 'res-error';
@@ -484,7 +554,6 @@
             window.scrollTo(0,0);
         }
 
-        // Lancement immédiat de l'application
         window.onload = initApp;
     </script>
 </body>
