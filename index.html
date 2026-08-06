@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CyberAcademy | Plateforme Opérationnelle</title>
+    <title>CyberAcademy | Plateforme Opérationnelle d'Élite</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -13,9 +13,9 @@
         <div class="logo">Cyber<span>Academy</span></div>
         <nav class="top-nav">
             <a onclick="switchView('dashboard-view')" class="nav-link">📊 Dashboard</a>
-            <a onclick="switchView('tracks-view')" class="nav-link">🎓 Piliers d'Apprentissage</a>
+            <a onclick="switchView('tracks-view')" class="nav-link">🎓 Piliers d'Apprentissage (Niv 1-4)</a>
             <a onclick="switchView('forensics-view')" class="nav-link">🔬 Forensics & SOC</a>
-            <a onclick="switchView('ctf-view')" class="nav-link">🚩 Zone CTF Bonus</a>
+            <a onclick="switchView('ctf-view')" class="nav-link">🚩 Zone CTF (Avancée)</a>
             <a onclick="switchView('tools-view')" class="nav-link">🛠️ Toolkit Opérationnel</a>
             
             <div class="header-profile">
@@ -45,11 +45,11 @@
         <div class="auth-left">
             <div class="auth-branding">
                 <h1 class="glitch-text">Cyber<span>Academy</span></h1>
-                <p class="auth-subtitle">Environnement d'entraînement cyber-offensif, défensif et forensique.</p>
+                <p class="auth-subtitle">Centre d'entraînement d'élite pour opérateurs en cybersécurité.</p>
                 <div class="auth-features">
-                    <div class="feature-item">✓ Cursus théoriques et VOD complets</div>
-                    <div class="feature-item">✓ Simulateurs d'attaques et IDOR</div>
-                    <div class="feature-item">✓ CTF verrouillés par progression de niveau</div>
+                    <div class="feature-item">✓ Cursus de 4 Niveaux (Fondations à l'Expertise)</div>
+                    <div class="feature-item">✓ Cours massifs de référence (1-2 pages techniques)</div>
+                    <div class="feature-item">✓ QCM rigoureux de 6 questions & CTF par niveau</div>
                 </div>
             </div>
         </div>
@@ -73,7 +73,7 @@
         <div id="dashboard-view" class="view-section">
             <div class="content-box" style="border-left: 4px solid var(--accent); margin-bottom: 30px;">
                 <h2 style="color: #fff; border:none; margin:0;">Centre de Commandement (Dashboard)</h2>
-                <p style="color:var(--text-muted); margin-top:10px;">Bienvenue, opérateur. Suivez vos statistiques et accédez à vos cursus.</p>
+                <p style="color:var(--text-muted); margin-top:10px;">Suivez vos statistiques globales et progressez à travers les 4 niveaux d'expertise.</p>
             </div>
             
             <div class="theme-grid" style="margin-bottom: 40px;">
@@ -87,24 +87,24 @@
                 </div>
                 <div class="content-box" style="margin:0; text-align:center;">
                     <h3 style="color:var(--text-muted); font-size:0.9rem;">DÉFIS CTF RÉSOLUS</h3>
-                    <div id="dash-ctf-count" style="font-size:2rem; font-weight:bold; color:var(--danger); font-family:monospace; margin:10px 0;">0 / 3</div>
+                    <div id="dash-ctf-count" style="font-size:2rem; font-weight:bold; color:var(--danger); font-family:monospace; margin:10px 0;">0 / 8</div>
                 </div>
             </div>
 
             <div class="content-box">
-                <h2 style="color:#fff;">Accès Rapide aux Piliers</h2>
+                <h2 style="color:#fff;">Piliers d'Apprentissage (Niveaux 1 à 4)</h2>
                 <div class="theme-grid" style="margin-top:20px;">
                     <div class="track-card card-dev" onclick="switchView('tracks-view'); openTrack('dev')">
-                        <div class="track-info"><h3>🌐 Fondations Web</h3><p>Architecture, requêtes, conception.</p></div>
+                        <div class="track-info"><h3>🌐 Fondations Web & API</h3><p>Architecture, JWT, OWASP Top 10.</p></div>
                     </div>
                     <div class="track-card card-red" onclick="switchView('tracks-view'); openTrack('red')">
-                        <div class="track-info"><h3>🔴 Red Team</h3><p>Attaque, SQLi, IDOR, exploitation.</p></div>
+                        <div class="track-info"><h3>🔴 Red Team & Active Directory</h3><p>Linux, SQLi, Post-Exploitation & AD.</p></div>
                     </div>
                     <div class="track-card card-blue" onclick="switchView('tracks-view'); openTrack('blue')">
-                        <div class="track-info"><h3>🔵 Blue Team</h3><p>Défense, logs, forensics.</p></div>
+                        <div class="track-info"><h3>🔵 Blue Team & Incident Response</h3><p>Logs, SIEM, Forensics RAM & Malware.</p></div>
                     </div>
                     <div class="track-card card-code" onclick="switchView('tracks-view'); openTrack('code')">
-                        <div class="track-info"><h3>💻 Scripting Python</h3><p>Automatisation et développement.</p></div>
+                        <div class="track-info"><h3>💻 Scripting Python Offensif</h3><p>Sockets, Bruteforce & Evasion EDR.</p></div>
                     </div>
                 </div>
             </div>
@@ -114,20 +114,20 @@
             <div id="tracks-selection">
                 <div class="content-box" style="margin-bottom: 30px; border-left: 4px solid var(--accent);">
                     <h2 style="color: #fff; border:none; margin:0;">Piliers d'Apprentissage</h2>
-                    <p style="color:var(--text-muted); margin-top:10px;">Choisissez un pilier pour suivre les cours théoriques.</p>
+                    <p style="color:var(--text-muted); margin-top:10px;">Parcours structurés en 4 niveaux progressifs (du débutant à l'expert).</p>
                 </div>
                 <div class="theme-grid">
                     <div class="track-card card-dev" onclick="openTrack('dev')">
-                        <div class="track-info"><h3>🌐 Fondations Web</h3><p>Architecture, requêtes, conception.</p></div>
+                        <div class="track-info"><h3>🌐 Fondations Web & API</h3><p>Architecture, JWT, OWASP Top 10.</p></div>
                     </div>
                     <div class="track-card card-red" onclick="openTrack('red')">
-                        <div class="track-info"><h3>🔴 Red Team</h3><p>Attaque, SQLi, IDOR, exploitation.</p></div>
+                        <div class="track-info"><h3>🔴 Red Team & Active Directory</h3><p>Linux, SQLi, Post-Exploitation & AD.</p></div>
                     </div>
                     <div class="track-card card-blue" onclick="openTrack('blue')">
-                        <div class="track-info"><h3>🔵 Blue Team</h3><p>Défense, logs, forensics.</p></div>
+                        <div class="track-info"><h3>🔵 Blue Team & Incident Response</h3><p>Logs, SIEM, Forensics RAM & Malware.</p></div>
                     </div>
                     <div class="track-card card-code" onclick="openTrack('code')">
-                        <div class="track-info"><h3>💻 Scripting Python</h3><p>Automatisation et développement.</p></div>
+                        <div class="track-info"><h3>💻 Scripting Python Offensif</h3><p>Sockets, Bruteforce & Evasion EDR.</p></div>
                     </div>
                 </div>
             </div>
@@ -142,16 +142,16 @@
         <div id="forensics-view" class="view-section">
             <div class="content-box" style="border-left: 4px solid #3b82f6; margin-bottom: 30px;">
                 <h2 style="color: #3b82f6; border:none; margin:0;">🔬 Module Forensics & Investigation Numérique</h2>
-                <p style="color:var(--text-muted); margin-top:10px;">Analysez des artefacts système et du trafic réseau.</p>
+                <p style="color:var(--text-muted); margin-top:10px;">Analyse d'artefacts système, de dumps RAM et de trafic brut.</p>
             </div>
             <div class="theme-grid">
                 <div class="theme-card" onclick="openForensicsLesson('pcap')">
-                    <div class="theme-title">📡 Analyse de Trames PCAP</div>
-                    <div class="theme-desc">Apprenez à utiliser Wireshark pour extraire des fichiers et des mots de passe.</div>
+                    <div class="theme-title">📡 Analyse de Trames PCAP (Wireshark)</div>
+                    <div class="theme-desc">Extraction de flux et d'identifiants en clair sur le réseau.</div>
                 </div>
                 <div class="theme-card" onclick="openForensicsLesson('memory')">
-                    <div class="theme-title">🧠 Analyse de Dump Mémoire (RAM)</div>
-                    <div class="theme-desc">Détection de malwares injectés dans la mémoire vive.</div>
+                    <div class="theme-title">🧠 Forensics Mémoire (Volatility)</div>
+                    <div class="theme-desc">Détection de malwares et processus injectés en RAM.</div>
                 </div>
             </div>
             <div id="forensics-content-box" style="display:none; margin-top:30px;"></div>
@@ -159,13 +159,13 @@
 
         <div id="ctf-view" class="view-section">
             <div class="content-box" style="border-left: 4px solid var(--danger); margin-bottom: 30px;">
-                <h2 style="color: var(--danger); border:none; margin:0;">🚩 Zone Bonus : Capture The Flag</h2>
-                <p style="color:var(--text-muted); margin-top:10px;">Ces défis sont verrouillés tant que le niveau requis n'est pas validé par un QCM.</p>
+                <h2 style="color: var(--danger); border:none; margin:0;">🚩 Zone Bonus : Capture The Flag (Difficulté Progressive)</h2>
+                <p style="color:var(--text-muted); margin-top:10px;">Chaque défi est verrouillé et ne s'ouvre qu'après validation du niveau de cours correspondant.</p>
             </div>
             <div id="ctf-container" class="theme-grid"></div>
         </div>
 
-        <!-- GRANDE VUE DE COURS (Théorie + Simulateur + QCM) -->
+        <!-- GRANDE VUE DE COURS MASSIVE -->
         <div id="theme-view" class="view-section">
             <button class="btn-back" onclick="switchView('tracks-view'); openTrack(currentTrack);">← Retour au Pilier</button>
             <div class="content-box">
@@ -175,7 +175,8 @@
             </div>
             <div id="simulator-container"></div>
             <div class="content-box qcm-box">
-                <h3 style="color: var(--warning); margin-bottom:15px;">> VALIDATION FINALE DU MODULE</h3>
+                <h3 style="color: var(--warning); margin-bottom:15px;">> ÉVALUATION TECHNIQUE (6 QUESTIONS EXPERTES)</h3>
+                <p style="color:var(--text-muted); margin-bottom:20px;">Répondez correctement à l'ensemble des questions pour valider ce niveau.</p>
                 <div id="quiz-content"></div>
                 <button class="btn-submit" onclick="submitThemeQCM()">Soumettre les réponses</button>
                 <div id="quiz-result"></div>
