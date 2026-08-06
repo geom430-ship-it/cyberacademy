@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberAcademy | Pro Environment</title>
+    <style>
+        :root {
+            --bg-main: #060913; --bg-card: #0f172a; --bg-card-hover: #1e293b;
+            --accent: #10b981; --accent-glow: rgba(16, 185, 129, 0.2);
+            --danger: #ef4444; --warning: #f59e0b;
+            --text-main: #f8fafc; --text-muted: #94a3b8;
+            --border: #334155;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: var(--bg-main); color: var(--text-main); line-height: 1.6; overflow-x: hidden; }
+        code, .terminal-font { font-family: 'Courier New', Courier, monospace; }
+
+        /* HEADER */
+        header { 
+            background-color: var(--bg-card); border-bottom: 1px solid var(--border); 
+            padding: 15px 20px; display: none; 
+            justify-content: space-between; align-items: center; 
+            position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            flex-wrap: wrap; gap: 10px;
+        }
+        header.visible { display: flex; }
+        .logo { font-size: 1.5rem; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; }
+        .logo span { color: var(--accent); }
+        .progress-container { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .rank-badge { background: rgba(16, 185, 129, 0.1); color: var(--accent); padding: 4px 10px; border-radius: 4px; border: 1px solid var(--accent); font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
+        .score { font-family: 'Courier New', monospace; font-weight: bold; font-size: 1rem; background: #000; padding: 4px 8px; border-radius: 4px; border: 1px solid #333; }
+        .user-name { color: var(--text-muted); font-size: 0.9rem; font-weight: bold; }
+        .btn-logout { background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; transition: 0.2s; }
+        .btn-logout:hover { background: var(--danger); color: #fff; }
+
+        .container { padding: 20px; max-width: 1000px; margin: 0 auto; }
+
+        /* VUES */
+        .view-section { display: none; animation: fadeIn 0.3s ease; }
+        .active-view { display: block !important; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- AUTH VIEW (Login / Register) --- */
+        #auth-view { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; background: #000; }
+        .auth-box { background: var(--bg-card); padding: 30px; border-radius: 12px; border: 1px solid var(--accent); width: 100%; max-width: 400px; text-align: center; box-shadow: 0 0 30px var(--accent-glow); }
+        .auth-box h1 { color: #fff; margin-bottom: 5px; font-size: 1.8rem; }
+        .auth-box h1 span { color: var(--accent); }
+        .auth-box p { color: var(--text-muted); margin-bottom: 25px; font-size: 0.9rem; }
+        
+        /* Onglets de connexion fixés pour le tactile */
+        .auth-tabs { display: flex; margin-bottom: 20px; border-radius: 6px; overflow: hidden; border: 1px solid var(--border); }
+        .auth-tab { flex: 1; padding: 12px; background: #000; color: var(--text-muted); cursor: pointer; font-size: 0.95rem; font-weight: bold; border: none; outline: none; }
+        .auth-tab.active { background: var(--accent); color: #000; }
+        
+        .auth-input { width: 100%; padding: 12px; background: #000; border: 1px solid var(--border); color: #fff; border-radius: 6px; margin-bottom: 15px; font-family: monospace; font-size: 1rem; text-align: center; outline: none; transition: 0.2s; }
+        .auth-input:focus { border-color: var(--accent); box-shadow: 0 0 10px var(--accent-glow); }
+        .auth-btn { background: var(--accent); color: #000; border: none; padding: 14px; width: 100%; font-weight: bold; font-size: 1rem; border-radius: 6px; cursor: pointer; text-transform: uppercase; transition: 0.2s; margin-top: 10px; }
+        .auth-btn:hover { background: #059669; }
+        .auth-btn:active { transform: scale(0.98); }
+        
+        #auth-msg { margin-top: 15px; font-size: 0.9rem; font-weight: bold; padding: 10px; border-radius: 6px; display: none; }
+
+        /* --- DASHBOARD --- */
+        .level-section { margin-bottom: 30px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+        .level-header { background: rgba(0,0,0,0.3); padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .level-header h3 { font-size: 1.3rem; color: #fff; }
+        .status-badge { font-size: 0.75rem; padding: 5px 10px; border-radius: 20px; font-weight: bold; font-family: monospace; }
+        .status-badge.unlocked { color: var(--accent); background: rgba(16, 185, 129, 0.1); border: 1px solid var(--accent); }
+        .status-badge.locked { color: var(--text-muted); background: rgba(255,255,255,0.05); border: 1px solid var(--text-muted); }
+
+        .theme-list { padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
+        .theme-card { background: #000; border: 1px solid var(--border); padding: 15px; border-radius: 8px; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; position: relative; }
+        .theme-card:hover:not(.disabled) { border-color: var(--accent); transform: translateY(-2px); }
+        .theme-card.completed { border-color: var(--accent); background: rgba(16, 185, 129, 0.05); }
+        .theme-card.completed::after { content: '✓'; position: absolute; top: 15px; right: 15px; color: var(--accent); font-weight: bold; }
+        .theme-card.disabled { opacity: 0.4; cursor: not-allowed; }
+        .theme-title { font-weight: bold; color: #fff; margin-bottom: 5px; font-size: 1.05rem; }
+        .theme-desc { font-size: 0.8rem; color: var(--text-muted); }
+
+        .exam-btn { display: block; width: calc(100% - 40px); margin: 0 20px 20px 20px; background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid var(--danger); padding: 14px; border-radius: 6px; text-align: center; cursor: pointer; font-weight: bold; transition: 0.2s; border: none; }
+        .exam-btn:hover { background: var(--danger); color: #fff; }
+
+        /* --- COURS & SIMULATEURS --- */
+        .btn-back { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border); padding: 10px 15px; border-radius: 6px; cursor: pointer; margin-bottom: 20px; font-size: 0.9rem; font-weight: bold; }
+        .content-box { background: var(--bg-card); padding: 25px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 20px; }
+        .content-box h2 { color: var(--accent); margin-bottom: 15px; }
+        
+        .sim-box { background: #000; border: 1px solid var(--warning); padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .sim-header { color: var(--warning); font-family: monospace; font-size: 0.9rem; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        .term-input, .web-input { width: 100%; padding: 12px; background: #111; color: #fff; border: 1px solid #333; border-radius: 6px; font-family: monospace; font-size: 1rem; outline: none; margin-bottom: 10px; }
+        .term-input:focus, .web-input:focus { border-color: var(--accent); }
+        .term-output { margin-top: 10px; font-family: monospace; color: #a1a1aa; white-space: pre-line; font-size: 0.9rem; }
+
+        /* --- QCM --- */
+        .options label { display: block; background: rgba(255,255,255,0.03); padding: 15px; margin-bottom: 10px; border-radius: 6px; cursor: pointer; border: 1px solid var(--border); }
+        .options label:hover { background: rgba(255,255,255,0.08); }
+        input[type="radio"] { margin-right: 10px; accent-color: var(--accent); transform: scale(1.2); }
+        .btn-submit { background: var(--accent); color: #000; border: none; padding: 15px; width: 100%; font-weight: bold; border-radius: 6px; cursor: pointer; margin-top: 10px; }
+        #quiz-result, #exam-result { margin-top: 15px; padding: 15px; border-radius: 6px; text-align: center; font-weight: bold; display: none; }
+    </style>
+</head>
+<body>
+
+    <!-- VUE AUTHENTIFICATION -->
+    <div id="auth-view" class="view-section active-view">
+        <div class="auth-box">
+            <h1>Cyber<span>Academy</span></h1>
+            <p>Plateforme Cloudflare active</p>
+            
+            <div class="auth-tabs">
+                <button class="auth-tab active" id="tab-login" onclick="switchAuthMode('login')">Se connecter</button>
+                <button class="auth-tab" id="tab-register" onclick="switchAuthMode('register')">Créer un compte</button>
+            </div>
+
+            <input type="text" id="auth-user" class="auth-input" placeholder="Pseudo" autocomplete="off">
+            <input type="password" id="auth-pass" class="auth-input" placeholder="Mot de passe" onkeypress="handleAuthEnter(event)">
+            
+            <button class="auth-btn" id="auth-btn-action" onclick="processAuth()">Connexion</button>
+            <div id="auth-msg"></div>
+        </div>
+    </div>
+
+    <!-- EN-TÊTE PRINCIPAL -->
+    <header id="main-header">
+        <div class="logo">Cyber<span>Academy</span></div>
+        <div class="progress-container">
+            <span class="user-name" id="display-user">@User</span>
+            <div id="user-rank" class="rank-badge">Recrue</div>
+            <div id="user-points" class="score">000 PTS</div>
+            <button class="btn-logout" onclick="logout()">Déconnexion</button>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <!-- DASHBOARD -->
+        <div id="dashboard-view" class="view-section">
+            <div class="content-box" style="margin-bottom: 30px;">
+                <h2 style="color: #fff;">Parcours : Pentester Débutant</h2>
+                <p>Validez les modules et l'examen final d'un niveau pour débloquer le suivant.</p>
+            </div>
+            <div id="levels-container"></div>
+        </div>
+
+        <!-- THEME VIEW -->
+        <div id="theme-view" class="view-section">
+            <button class="btn-back" onclick="showDashboard()">← Retour au Parcours</button>
+            <div class="content-box" id="lesson-content"></div>
+            <div id="simulator-container"></div>
+            <div class="content-box">
+                <h3 style="color: var(--accent); margin-bottom:15px;">Questionnaire de validation</h3>
+                <div id="quiz-content"></div>
+                <button class="btn-submit" onclick="submitThemeQCM()">Valider le module</button>
+                <div id="quiz-result"></div>
+            </div>
+        </div>
+
+        <!-- EXAM VIEW -->
+        <div id="exam-view" class="view-section">
+            <button class="btn-back" onclick="showDashboard()">← Retour</button>
+            <div class="content-box" style="border-color: var(--danger);">
+                <h2 style="color: var(--danger);">EXAMEN FINAL DU NIVEAU</h2>
+                <div id="exam-content" style="margin-top: 20px;"></div>
+                <button class="btn-submit" style="background: var(--danger); color: #fff;" onclick="submitExam()">Soumettre l'examen</button>
+                <div id="exam-result"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- BASE DE DONNÉES DES COURS ---
+        const db = [
+            {
+                id: 1, title: "Niveau 1 : Reconnaissance Linux",
+                themes: [
+                    {
+                        id: "t1_linux", title: "Naviguer dans le terminal", desc: "Trouver les fichiers cachés du système.",
+                        content: `<h2>Système de fichiers</h2><p>Les fichiers cachés sous Linux commencent toujours par un point (ex: <code>.bashrc</code>).</p>`,
+                        simType: "terminal",
+                        simData: { expected: "ls -a", successOutput: "[OK] Fichier trouvé : .secret_flag\nContenu : FLAG{term_nav_01}" },
+                        quiz: [
+                            { q: "Quelle commande as-tu utilisée dans le simulateur ?", options: ["ls", "ls -a", "pwd"], ans: 1 },
+                            { q: "Quel est le FLAG secret découvert ?", options: ["FLAG{hidden}", "FLAG{term_nav_01}", "FLAG{admin}"], ans: 1 }
+                        ]
+                    },
+                    {
+                        id: "t1_net", title: "Bases du Réseau", desc: "Comprendre les ports.",
+                        content: `<h2>Ports et Services</h2><p>Le port HTTP par défaut est le 80, et le HTTPS (sécurisé) est le 443.</p>`,
+                        simType: "none",
+                        quiz: [
+                            { q: "Quel port est utilisé pour le trafic web chiffré (HTTPS) ?", options: ["Port 80", "Port 21", "Port 443"], ans: 2 }
+                        ]
+                    }
+                ],
+                exam: [
+                    { q: "Comment rendre un fichier invisible sous Linux par défaut ?", options: ["Le mettre dans /root", "Commencer son nom par un point (.)"], ans: 1 }
+                ]
+            },
+            {
+                id: 2, title: "Niveau 2 : Attaques Web",
+                themes: [
+                    {
+                        id: "t2_sqli", title: "Injection SQL (Bypass)", desc: "Contourner un login.",
+                        content: `<h2>Injection SQL</h2><p>Si tu ajoutes <code>' OR 1=1 --</code> au mot de passe, tu crées une logique toujours vraie.</p>`,
+                        simType: "sqli",
+                        quiz: [
+                            { q: "Que permet l'injection SQL ici ?", options: ["Se connecter sans mot de passe", "Faire planter le PC"], ans: 0 },
+                            { q: "Quel FLAG as-tu obtenu ?", options: ["FLAG{sqli_bypass}", "FLAG{hack_db}"], ans: 0 }
+                        ]
+                    }
+                ],
+                exam: [
+                    { q: "Où s'exécute la requête SQL ?", options: ["Dans le navigateur", "Sur le serveur de base de données"], ans: 1 }
+                ]
+            }
+        ];
+
+        // --- GESTION DES COMPTES ULTRA SÉCURISÉE (ANTI-CRASH) ---
+        let accounts = {};
+        let activeUser = null;
+        let state = { completedThemes: [], completedExams: [], currentTheme: null, currentLevel: null };
+        let authMode = 'login'; 
+
+        // Fonction d'initialisation sécurisée
+        function initApp() {
+            try {
+                const storedDB = localStorage.getItem('cyberacademy_db_v3');
+                if (storedDB) accounts = JSON.parse(storedDB);
+                
+                const session = localStorage.getItem('cyberacademy_session_v3');
+                if (session && accounts[session]) {
+                    loginUser(session);
+                }
+            } catch(e) {
+                console.error("Sauvegarde corrompue réparée automatiquement.");
+                accounts = {};
+                localStorage.setItem('cyberacademy_db_v3', '{}');
+                localStorage.removeItem('cyberacademy_session_v3');
+            }
+        }
+
+        // --- AUTHENTIFICATION ---
+        function switchAuthMode(mode) {
+            authMode = mode;
+            document.getElementById('tab-login').classList.toggle('active', mode === 'login');
+            document.getElementById('tab-register').classList.toggle('active', mode === 'register');
+            document.getElementById('auth-btn-action').innerText = mode === 'login' ? "Connexion" : "Créer le compte";
+            document.getElementById('auth-msg').style.display = 'none';
+        }
+
+        function handleAuthEnter(e) { if (e.key === 'Enter') processAuth(); }
+
+        function showAuthMessage(msg, isError) {
+            const msgBox = document.getElementById('auth-msg');
+            msgBox.style.display = 'block';
+            msgBox.style.background = isError ? 'rgba(239, 68, 68, 0.2)' : 'rgba(16, 185, 129, 0.2)';
+            msgBox.style.color = isError ? 'var(--danger)' : 'var(--accent)';
+            msgBox.style.border = `1px solid ${isError ? 'var(--danger)' : 'var(--accent)'}`;
+            msgBox.innerText = msg;
+        }
+
+        function processAuth() {
+            const user = document.getElementById('auth-user').value.trim();
+            const pass = document.getElementById('auth-pass').value.trim();
+            
+            if (!user || !pass) {
+                showAuthMessage("Veuillez remplir tous les champs.", true);
+                return;
+            }
+
+            if (authMode === 'register') {
+                if (accounts[user]) {
+                    showAuthMessage("Ce pseudo est déjà pris. Connectez-vous.", true);
+                } else {
+                    accounts[user] = { password: pass, completedThemes: [], completedExams: [] };
+                    try {
+                        localStorage.setItem('cyberacademy_db_v3', JSON.stringify(accounts));
+                    } catch(e) { /* Mode navigation privée strict */ }
+                    showAuthMessage("Compte créé avec succès ! Connexion...", false);
+                    setTimeout(() => loginUser(user), 1000);
+                }
+            } else { // Login
+                if (!accounts[user]) {
+                    showAuthMessage("Compte introuvable. Cliquez sur 'Créer un compte'.", true);
+                } else if (accounts[user].password === pass) {
+                    loginUser(user);
+                } else {
+                    showAuthMessage("Mot de passe incorrect.", true);
+                }
+            }
+        }
+
+        function loginUser(username) {
+            activeUser = username;
+            try { localStorage.setItem('cyberacademy_session_v3', username); } catch(e) {}
+            
+            state.completedThemes = accounts[username].completedThemes || [];
+            state.completedExams = accounts[username].completedExams || [];
+            
+            document.getElementById('auth-user').value = '';
+            document.getElementById('auth-pass').value = '';
+            
+            document.getElementById('auth-view').classList.remove('active-view');
+            document.getElementById('main-header').classList.add('visible');
+            document.getElementById('display-user').innerText = "@" + username;
+            document.getElementById('dashboard-view').classList.add('active-view');
+            
+            renderDashboard();
+        }
+
+        function logout() {
+            activeUser = null;
+            try { localStorage.removeItem('cyberacademy_session_v3'); } catch(e) {}
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active-view'));
+            document.getElementById('main-header').classList.remove('visible');
+            document.getElementById('auth-view').classList.add('active-view');
+            document.getElementById('auth-msg').style.display = 'none';
+        }
+
+        function saveProgress() {
+            if (activeUser && accounts[activeUser]) {
+                accounts[activeUser].completedThemes = state.completedThemes;
+                accounts[activeUser].completedExams = state.completedExams;
+                try { localStorage.setItem('cyberacademy_db_v3', JSON.stringify(accounts)); } catch(e) {}
+            }
+            updateUserProfile();
+        }
+
+        // --- DASHBOARD & LOGIQUE ---
+        // Le reste de la logique (chargement, simulateurs, QCM, examens) reste identique mais utilise la sauvegarde réparée.
+        
+        function updateUserProfile() {
+            let pts = (state.completedThemes.length * 50) + (state.completedExams.length * 200);
+            document.getElementById('user-points').innerText = pts.toString().padStart(3, '0') + " PTS";
+            let rank = "Recrue";
+            if(pts >= 100) rank = "Initié";
+            if(pts >= 300) rank = "Opérateur";
+            document.getElementById('user-rank').innerText = rank;
+        }
+
+        function renderDashboard() {
+            updateUserProfile();
+            const container = document.getElementById('levels-container');
+            container.innerHTML = '';
+
+            db.forEach((level, index) => {
+                const unlocked = index === 0 || state.completedExams.includes(db[index - 1].id);
+                const statusBadge = unlocked ? `<span class="status-badge unlocked">🔓 DÉBLOQUÉ</span>` : `<span class="status-badge locked">🔒 REQUIS : NIVEAU ${index}</span>`;
+
+                let themesHTML = '';
+                let allThemesDone = true;
+
+                level.themes.forEach(theme => {
+                    const isDone = state.completedThemes.includes(theme.id);
+                    if(!isDone) allThemesDone = false;
+                    const cardClass = "theme-card " + (isDone ? 'completed' : '') + (!unlocked ? ' disabled' : '');
+                    themesHTML += `
+                        <div class="${cardClass}" onclick="openTheme('${theme.id}', ${unlocked})">
+                            <div class="theme-title">${theme.title}</div>
+                            <div class="theme-desc">${theme.desc}</div>
+                        </div>`;
+                });
+
+                let examBtnHTML = '';
+                if (unlocked) {
+                    const examDone = state.completedExams.includes(level.id);
+                    if (allThemesDone && !examDone) {
+                        examBtnHTML = `<button class="exam-btn" onclick="openExam(${level.id})">🔥 PASSER L'EXAMEN DU NIVEAU ${level.id} 🔥</button>`;
+                    } else if (examDone) {
+                        examBtnHTML = `<div style="text-align:center; color:var(--accent); margin: 0 0 20px 0; font-weight:bold;">[ NIVEAU VALIDÉ ]</div>`;
+                    }
+                }
+
+                container.innerHTML += `<div class="level-section"><div class="level-header"><h3>${level.title}</h3>${statusBadge}</div><div class="theme-list">${themesHTML}</div>${examBtnHTML}</div>`;
+            });
+        }
+
+        function openTheme(themeId, isUnlocked) {
+            if (!isUnlocked) return;
+            db.forEach(l => l.themes.forEach(t => { if (t.id === themeId) state.currentTheme = t; }));
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active-view'));
+            document.getElementById('theme-view').classList.add('active-view');
+            window.scrollTo(0,0);
+            document.getElementById('lesson-content').innerHTML = state.currentTheme.content;
+            
+            const simContainer = document.getElementById('simulator-container');
+            if (state.currentTheme.simType === "terminal") {
+                simContainer.innerHTML = `<div class="sim-box"><div class="sim-header">💻 Objectif : Liste les fichiers cachés</div><input type="text" id="term-input" class="term-input" placeholder="Taper la commande..." autocomplete="off" onkeypress="handleTerm(event, '${state.currentTheme.simData.expected}')"><div id="term-output" class="term-output">En attente de commande...</div></div>`;
+            } else if (state.currentTheme.simType === "sqli") {
+                simContainer.innerHTML = `<div class="sim-box"><div class="sim-header">⚙️ Bypass le mot de passe Admin</div><input type="text" class="web-input" value="admin" disabled><input type="text" id="sql-input" class="web-input" placeholder="Mot de passe (' OR 1=1 --)" oninput="checkSQL()"><div id="sql-output" class="term-output">Accès verrouillé.</div></div>`;
+            } else { simContainer.innerHTML = ''; }
+
+            let quizHTML = '';
+            state.currentTheme.quiz.forEach((q, qIndex) => {
+                let optionsHTML = '';
+                q.options.forEach((opt, optIndex) => { optionsHTML += `<label><input type="radio" name="q_${qIndex}" value="${optIndex}"> ${opt}</label>`; });
+                quizHTML += `<div style="margin-bottom:20px;"><p style="font-weight:bold; margin-bottom:10px; color:#fff;">${q.q}</p><div>${optionsHTML}</div></div>`;
+            });
+            document.getElementById('quiz-content').innerHTML = quizHTML;
+            document.getElementById('quiz-result').style.display = 'none';
+        }
+
+        function handleTerm(e, expected) {
+            if (e.key === 'Enter') {
+                const val = e.target.value.trim().toLowerCase();
+                if (val === expected) document.getElementById('term-output').innerHTML = "<span style='color:var(--accent);'>" + state.currentTheme.simData.successOutput + "</span>";
+                else document.getElementById('term-output').innerHTML = `<span style='color:var(--danger);'>bash: ${val}: command not found</span>`;
+            }
+        }
+        function checkSQL() {
+            const val = document.getElementById('sql-input').value;
+            if (val.includes("' OR 1=1")) document.getElementById('sql-output').innerHTML = "<span style='color:var(--accent);'>[BYPASS RÉUSSI] Ton FLAG : FLAG{sqli_bypass}</span>";
+            else document.getElementById('sql-output').innerHTML = "Accès verrouillé.";
+        }
+
+        function submitThemeQCM() {
+            let allCorrect = true;
+            state.currentTheme.quiz.forEach((q, index) => {
+                const inputs = document.getElementsByName('q_' + index);
+                let selectedVal = null;
+                for(let i=0; i<inputs.length; i++) { if(inputs[i].checked) selectedVal = parseInt(inputs[i].value); }
+                if (selectedVal !== q.ans) allCorrect = false;
+            });
+            const resBox = document.getElementById('quiz-result');
+            resBox.style.display = 'block';
+            if (allCorrect) {
+                resBox.className = 'res-success';
+                resBox.style.background = 'rgba(16, 185, 129, 0.2)'; resBox.style.color = 'var(--accent)'; resBox.style.border = '1px solid var(--accent)';
+                resBox.innerText = "[+] Validé ! Retour au dashboard...";
+                if (!state.completedThemes.includes(state.currentTheme.id)) { state.completedThemes.push(state.currentTheme.id); saveProgress(); }
+                setTimeout(showDashboard, 1500);
+            } else {
+                resBox.className = 'res-error';
+                resBox.style.background = 'rgba(239, 68, 68, 0.2)'; resBox.style.color = 'var(--danger)'; resBox.style.border = '1px solid var(--danger)';
+                resBox.innerText = "[-] Échec. Vérifiez vos réponses.";
+            }
+        }
+
+        function openExam(levelId) {
+            db.forEach(l => { if (l.id === levelId) state.currentLevel = l; });
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active-view'));
+            document.getElementById('exam-view').classList.add('active-view');
+            window.scrollTo(0,0);
+            let examHTML = '';
+            state.currentLevel.exam.forEach((q, qIndex) => {
+                let optionsHTML = '';
+                q.options.forEach((opt, optIndex) => { optionsHTML += `<label><input type="radio" name="e_${qIndex}" value="${optIndex}"> ${opt}</label>`; });
+                examHTML += `<div style="margin-bottom:20px;"><p style="font-weight:bold; margin-bottom:10px; color:#fff;">${q.q}</p><div>${optionsHTML}</div></div>`;
+            });
+            document.getElementById('exam-content').innerHTML = examHTML;
+            document.getElementById('exam-result').style.display = 'none';
+        }
+
+        function submitExam() {
+            let allCorrect = true;
+            state.currentLevel.exam.forEach((q, index) => {
+                const inputs = document.getElementsByName('e_' + index);
+                let selectedVal = null;
+                for(let i=0; i<inputs.length; i++) { if(inputs[i].checked) selectedVal = parseInt(inputs[i].value); }
+                if (selectedVal !== q.ans) allCorrect = false;
+            });
+            const resBox = document.getElementById('exam-result');
+            resBox.style.display = 'block';
+            if (allCorrect) {
+                resBox.className = 'res-success';
+                resBox.style.background = 'rgba(16, 185, 129, 0.2)'; resBox.style.color = 'var(--accent)'; resBox.style.border = '1px solid var(--accent)';
+                resBox.innerText = "EXAMEN RÉUSSI !";
+                if (!state.completedExams.includes(state.currentLevel.id)) { state.completedExams.push(state.currentLevel.id); saveProgress(); }
+                setTimeout(showDashboard, 1500);
+            } else {
+                resBox.className = 'res-error';
+                resBox.style.background = 'rgba(239, 68, 68, 0.2)'; resBox.style.color = 'var(--danger)'; resBox.style.border = '1px solid var(--danger)';
+                resBox.innerText = "Échec. Certaines réponses sont incorrectes.";
+            }
+        }
+
+        function showDashboard() {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active-view'));
+            document.getElementById('dashboard-view').classList.add('active-view');
+            renderDashboard();
+            window.scrollTo(0,0);
+        }
+
+        // Lancement immédiat de l'application
+        window.onload = initApp;
+    </script>
+</body>
+</html>
