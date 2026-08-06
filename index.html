@@ -9,15 +9,16 @@
 <body>
     <div class="scanlines"></div>
 
-    <!-- NOUVEL EN-TÊTE PROFESSIONNEL (Navigation en haut à droite) -->
-    <header id="main-header">
+    <!-- EN-TÊTE PROFESSIONNEL (Navigation en haut à droite) -->
+    <header id="main-header" style="display: none;">
         <div class="logo">Cyber<span>Academy</span></div>
         <nav class="top-nav">
-            <a onclick="switchView('dashboard-view')" class="nav-link">🎓 Piliers d'Apprentissage</a>
+            <a onclick="switchView('dashboard-view')" class="nav-link">📊 Dashboard</a>
+            <a onclick="switchView('tracks-view')" class="nav-link">🎓 Piliers d'Apprentissage</a>
+            <a onclick="switchView('forensics-view')" class="nav-link">🔬 Forensics & SOC</a>
             <a onclick="switchView('ctf-view')" class="nav-link">🚩 Zone CTF Bonus</a>
             <a onclick="switchView('tools-view')" class="nav-link">🛠️ Toolkit Opérationnel</a>
             
-            <!-- Profil Utilisateur Détaillé -->
             <div class="header-profile">
                 <div class="profile-info">
                     <span id="header-user" class="user-name">@User</span>
@@ -47,11 +48,11 @@
         <div class="auth-left">
             <div class="auth-branding">
                 <h1 class="glitch-text">Cyber<span>Academy</span></h1>
-                <p class="auth-subtitle">Environnement d'entraînement cyber-offensif et défensif.</p>
+                <p class="auth-subtitle">Environnement d'entraînement cyber-offensif, défensif et forensique.</p>
                 <div class="auth-features">
-                    <div class="feature-item">✓ Cursus théoriques complets (VOD & Docs)</div>
-                    <div class="feature-item">✓ Simulateurs tactiques intégrés</div>
-                    <div class="feature-item">✓ CTF déblocables par l'expérience</div>
+                    <div class="feature-item">✓ Cursus théoriques et VOD complets</div>
+                    <div class="feature-item">✓ Simulateurs d'attaques et IDOR</div>
+                    <div class="feature-item">✓ CTF verrouillés par progression de niveau</div>
                 </div>
             </div>
         </div>
@@ -59,75 +60,133 @@
             <div class="auth-box">
                 <h2>PORTAIL OPÉRATEUR</h2>
                 <div class="auth-tabs">
-                    <button class="auth-tab active" id="tab-login" onclick="setAuthMode('login')">Login</button>
-                    <button class="auth-tab" id="tab-register" onclick="setAuthMode('register')">S'enrôler</button>
+                    <button class="auth-tab active" id="tab-login" onclick="setAuthMode('login')">Connexion</button>
+                    <button class="auth-tab" id="tab-register" onclick="setAuthMode('register')">Créer un compte</button>
                 </div>
                 <input type="text" id="auth-user" class="auth-input" placeholder="Identifiant" autocomplete="off">
                 <input type="password" id="auth-pass" class="auth-input" placeholder="Mot de passe" onkeypress="if(event.key === 'Enter') processAuth()">
                 <button class="auth-btn" id="auth-btn-action" onclick="processAuth()">INITIALISER LA SESSION</button>
-                <div id="auth-msg"></div>
+                <div id="auth-msg" style="margin-top:15px; font-family:monospace; font-weight:bold; display:none;"></div>
             </div>
         </div>
     </div>
 
     <div class="container">
         
-        <!-- DASHBOARD (Piliers) -->
+        <!-- VUE DASHBOARD GLOBAL -->
         <div id="dashboard-view" class="view-section">
-            <div class="content-box" style="margin-bottom: 30px; border-left: 4px solid var(--accent);">
-                <h2 style="color: #fff; border:none; margin:0;">Piliers d'Apprentissage</h2>
-                <p style="color:var(--text-muted); margin-top:10px;">Validez les niveaux de ces piliers pour débloquer les défis CTF correspondants.</p>
+            <div class="content-box" style="border-left: 4px solid var(--accent); margin-bottom: 30px;">
+                <h2 style="color: #fff; border:none; margin:0;">Centre de Commandement (Dashboard)</h2>
+                <p style="color:var(--text-muted); margin-top:10px;">Bienvenue, opérateur. Suivez vos statistiques, accédez rapidement à vos cursus et surveillez vos accès CTF.</p>
             </div>
             
-            <div id="tracks-selection" class="theme-grid">
-                <div class="track-card card-dev" onclick="openTrack('dev')">
-                    <div class="track-info"><h3>🌐 Fondations Web</h3><p>Architecture, requêtes, conception.</p></div>
+            <div class="theme-grid" style="margin-bottom: 40px;">
+                <div class="content-box" style="margin:0; text-align:center;">
+                    <h3 style="color:var(--text-muted); font-size:0.9rem;">GRADE ACTUEL</h3>
+                    <div id="dash-rank" style="font-size:2rem; font-weight:bold; color:var(--accent); font-family:monospace; margin:10px 0;">Recrue</div>
                 </div>
-                <div class="track-card card-red" onclick="openTrack('red')">
-                    <div class="track-info"><h3>🔴 Red Team</h3><p>Attaque, contournement, exploitation.</p></div>
+                <div class="content-box" style="margin:0; text-align:center;">
+                    <h3 style="color:var(--text-muted); font-size:0.9rem;">SCORE TOTAL</h3>
+                    <div id="dash-pts" style="font-size:2rem; font-weight:bold; color:var(--warning); font-family:monospace; margin:10px 0;">0000 PTS</div>
                 </div>
-                <div class="track-card card-blue" onclick="openTrack('blue')">
-                    <div class="track-info"><h3>🔵 Blue Team</h3><p>Défense, logs, forensics.</p></div>
-                </div>
-                <div class="track-card card-code" onclick="openTrack('code')">
-                    <div class="track-info"><h3>💻 Scripting Python</h3><p>Automatisation et développement d'outils.</p></div>
+                <div class="content-box" style="margin:0; text-align:center;">
+                    <h3 style="color:var(--text-muted); font-size:0.9rem;">DÉFIS CTF RÉSOLUS</h3>
+                    <div id="dash-ctf-count" style="font-size:2rem; font-weight:bold; color:var(--danger); font-family:monospace; margin:10px 0;">0 / 5</div>
                 </div>
             </div>
 
-            <div id="track-content" style="display:none; margin-top:30px;">
+            <div class="content-box">
+                <h2 style="color:#fff;">Accès Rapide aux Piliers</h2>
+                <div class="theme-grid" style="margin-top:20px;">
+                    <div class="track-card card-dev" onclick="switchView('tracks-view'); openTrack('dev')">
+                        <div class="track-info"><h3>🌐 Fondations Web</h3><p>Architecture, requêtes, conception.</p></div>
+                    </div>
+                    <div class="track-card card-red" onclick="switchView('tracks-view'); openTrack('red')">
+                        <div class="track-info"><h3>🔴 Red Team</h3><p>Attaque, SQLi, IDOR, exploitation.</p></div>
+                    </div>
+                    <div class="track-card card-blue" onclick="switchView('tracks-view'); openTrack('blue')">
+                        <div class="track-info"><h3>🔵 Blue Team</h3><p>Défense, logs, forensics.</p></div>
+                    </div>
+                    <div class="track-card card-code" onclick="switchView('tracks-view'); openTrack('code')">
+                        <div class="track-info"><h3>💻 Scripting Python</h3><p>Automatisation et développement.</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VUE PILIERS D'APPRENTISSAGE (Tracks) -->
+        <div id="tracks-view" class="view-section">
+            <div id="tracks-selection">
+                <div class="content-box" style="margin-bottom: 30px; border-left: 4px solid var(--accent);">
+                    <h2 style="color: #fff; border:none; margin:0;">Piliers d'Apprentissage</h2>
+                    <p style="color:var(--text-muted); margin-top:10px;">Choisissez un pilier pour suivre les cours et passer les examens de certification.</p>
+                </div>
+                <div class="theme-grid">
+                    <div class="track-card card-dev" onclick="openTrack('dev')">
+                        <div class="track-info"><h3>🌐 Fondations Web</h3><p>Architecture, requêtes, conception.</p></div>
+                    </div>
+                    <div class="track-card card-red" onclick="openTrack('red')">
+                        <div class="track-info"><h3>🔴 Red Team</h3><p>Attaque, SQLi, IDOR, exploitation.</p></div>
+                    </div>
+                    <div class="track-card card-blue" onclick="openTrack('blue')">
+                        <div class="track-info"><h3>🔵 Blue Team</h3><p>Défense, logs, forensics.</p></div>
+                    </div>
+                    <div class="track-card card-code" onclick="openTrack('code')">
+                        <div class="track-info"><h3>💻 Scripting Python</h3><p>Automatisation et développement.</p></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="track-content" style="display:none;">
                 <button class="btn-back" onclick="backToTracks()">← Retour aux piliers</button>
                 <h2 id="current-track-title" style="color:#fff; margin-bottom:20px; font-size:1.8rem; border-bottom:1px solid var(--border); padding-bottom:10px;"></h2>
                 <div id="levels-container"></div>
             </div>
         </div>
 
-        <!-- ZONE CTF (Défis sous condition) -->
+        <!-- VUE FORENSICS & SOC (Nouvel Onglet) -->
+        <div id="forensics-view" class="view-section">
+            <div class="content-box" style="border-left: 4px solid #3b82f6; margin-bottom: 30px;">
+                <h2 style="color: #3b82f6; border:none; margin:0;">🔬 Module Forensics & Investigation Numérique</h2>
+                <p style="color:var(--text-muted); margin-top:10px;">Analysez des artefacts système, des dumps mémoire et du trafic réseau brut pour remonter jusqu'aux attaquants.</p>
+            </div>
+            <div class="theme-grid">
+                <div class="theme-card" onclick="openForensicsLesson('pcap')">
+                    <div class="theme-title">📡 Analyse de Trames PCAP</div>
+                    <div class="theme-desc">Apprenez à utiliser Wireshark pour extraire des fichiers et des mots de passe en clair d'une capture réseau.</div>
+                </div>
+                <div class="theme-card" onclick="openForensicsLesson('memory')">
+                    <div class="theme-title">🧠 Analyse de Dump Mémoire (RAM)</div>
+                    <div class="theme-desc">Utilisation de Volatility pour détecter des malwares injectés directement dans la mémoire vive.</div>
+                </div>
+                <div class="theme-card" onclick="openForensicsLesson('logs_advanced')">
+                    <div class="theme-title">📊 Corrélation de Logs Avancée</div>
+                    <div class="theme-desc">Traquer les mouvements latéraux d'un attaquant à travers un domaine Active Directory.</div>
+                </div>
+            </div>
+            <div id="forensics-content-box" style="display:none; margin-top:30px;"></div>
+        </div>
+
+        <!-- ZONE CTF (Défis verrouillés par niveau) -->
         <div id="ctf-view" class="view-section">
             <div class="content-box" style="border-left: 4px solid var(--danger); margin-bottom: 30px;">
                 <h2 style="color: var(--danger); border:none; margin:0;">🚩 Zone Bonus : Capture The Flag</h2>
-                <p style="color:var(--text-muted); margin-top:10px;">Ces défis sont verrouillés. Prouvez votre valeur dans les Piliers d'Apprentissage pour y avoir accès.</p>
+                <p style="color:var(--text-muted); margin-top:10px;">Ces défis sont verrouillés. Validez les examens des niveaux correspondants dans les Piliers pour y accéder.</p>
             </div>
             <div id="ctf-container" class="theme-grid"></div>
         </div>
 
-        <!-- THEME VIEW (Le Grand Cours Pédagogique) -->
+        <!-- THEME VIEW (Le Grand Cours) -->
         <div id="theme-view" class="view-section">
-            <button class="btn-back" onclick="switchView('dashboard-view')">← Retour au Pilier</button>
-            
-            <!-- 1. THÉORIE MASSIVE -->
+            <button class="btn-back" onclick="switchView('tracks-view'); openTrack(currentTrack);">← Retour au Pilier</button>
             <div class="content-box">
                 <h2 id="lesson-title" style="font-size: 2rem; color: #fff;">Titre</h2>
                 <p id="lesson-desc" style="color: var(--accent); font-weight: bold; margin-bottom: 30px;"></p>
                 <div id="lesson-content" class="course-body"></div>
             </div>
-
-            <!-- 2. PRATIQUE -->
             <div id="simulator-container"></div>
-
-            <!-- 3. VALIDATION -->
             <div class="content-box qcm-box">
                 <h3 style="color: var(--warning); margin-bottom:15px;">> VALIDATION FINALE DU MODULE</h3>
-                <p style="color: var(--text-muted); margin-bottom: 20px;">Lisez bien le cours ci-dessus avant de répondre.</p>
                 <div id="quiz-content"></div>
                 <button class="btn-submit" onclick="submitThemeQCM()">Soumettre les réponses</button>
                 <div id="quiz-result"></div>
@@ -147,41 +206,42 @@
             </div>
         </div>
 
-        <!-- OUTILS DE PENTEST (TOOLKIT PRO) -->
+        <!-- TOOLKIT OPÉRATIONNEL -->
         <div id="tools-view" class="view-section">
             <div class="content-box" style="margin-bottom: 30px; border-left: 4px solid var(--warning);">
-                <h2 style="color: var(--warning); border:none; margin:0;">🛠️ Toolkit Opérationnel</h2>
-                <p style="color:var(--text-muted); margin-top:10px;">Vos outils cryptographiques et réseaux locaux.</p>
+                <h2 style="color: var(--warning); border:none; margin:0;">🛠️ Toolkit Opérationnel & Payload Generator</h2>
+                <p style="color:var(--text-muted); margin-top:10px;">Générez vos charges utiles et effectuez vos calculs réseaux.</p>
             </div>
 
             <div class="theme-grid">
-                <!-- OUTIL 1 : HASH -->
+                <div class="content-box" style="margin:0; grid-column: 1 / -1; border-color: var(--danger);">
+                    <h3 style="color:var(--danger);">Générateur de Payloads d'Attaque</h3>
+                    <div style="display:flex; gap:10px; margin-bottom:15px; flex-wrap:wrap; margin-top:15px;">
+                        <select id="payload-type" class="auth-input" style="flex:1; margin:0; text-align:left;">
+                            <option value="py_rev">Reverse Shell Python (TCP)</option>
+                            <option value="xss_cookie">XSS Vol de Cookie</option>
+                            <option value="sql_bypass">SQLi Auth Bypass</option>
+                        </select>
+                        <input type="text" id="payload-ip" class="auth-input" style="width:200px; margin:0;" value="10.0.0.5">
+                        <button class="auth-btn" style="width:150px; margin-top:0; background:var(--danger); color:#fff;" onclick="generatePayload()">Générer</button>
+                    </div>
+                    <div class="term-output" id="payload-out" style="background: #000; padding:15px; font-family:monospace;">En attente de génération...</div>
+                </div>
+
                 <div class="content-box" style="margin:0;">
                     <h3 style="color:#fff;">Générateur SHA-256</h3>
-                    <input type="text" id="tool-hash-in" class="auth-input" style="text-align:left;" placeholder="Entrez la chaîne..." oninput="generateHash()">
+                    <input type="text" id="tool-hash-in" class="auth-input" style="text-align:left; margin-top:15px;" placeholder="Entrez la chaîne..." oninput="generateHash()">
                     <div class="term-output" id="tool-hash-out" style="word-break: break-all; background: #000; padding:10px;">...</div>
                 </div>
 
-                <!-- OUTIL 2 : BASE64 -->
                 <div class="content-box" style="margin:0;">
                     <h3 style="color:#fff;">Moteur Base64</h3>
-                    <textarea id="tool-b64-in" class="auth-input" style="text-align:left; min-height: 60px;" placeholder="Données brutes..."></textarea>
+                    <textarea id="tool-b64-in" class="auth-input" style="text-align:left; min-height: 60px; margin-top:15px;" placeholder="Données brutes..."></textarea>
                     <div style="display:flex; gap:10px; margin-bottom:15px;">
                         <button class="auth-btn" style="margin-top:0;" onclick="handleBase64('encode')">Encoder</button>
                         <button class="auth-btn" style="margin-top:0; background:var(--bg-card); color:#fff; border:1px solid var(--border);" onclick="handleBase64('decode')">Décoder</button>
                     </div>
                     <div class="term-output" id="tool-b64-out" style="word-break: break-all; background: #000; padding:10px;">...</div>
-                </div>
-
-                <!-- OUTIL 3 : CALCULATEUR CIDR (NOUVEAU VRAI OUTIL) -->
-                <div class="content-box" style="margin:0; grid-column: 1 / -1;">
-                    <h3 style="color:#fff;">Calculateur de Sous-réseaux (CIDR)</h3>
-                    <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:15px;">Indispensable pour délimiter la portée d'un scan Nmap.</p>
-                    <div style="display:flex; gap:10px;">
-                        <input type="text" id="tool-ip-in" class="auth-input" style="text-align:left;" placeholder="Ex: 192.168.1.0/24">
-                        <button class="auth-btn" style="width:150px; margin-top:0;" onclick="calculateCIDR()">Calculer</button>
-                    </div>
-                    <div class="term-output" id="tool-ip-out" style="background: #000; padding:15px; font-family:monospace; line-height:1.6;">En attente d'une IP/CIDR...</div>
                 </div>
             </div>
         </div>
