@@ -47,9 +47,9 @@
                 <h1 class="glitch-text">Cyber<span>Academy</span></h1>
                 <p class="auth-subtitle">Centre d'entraînement d'élite pour opérateurs en cybersécurité.</p>
                 <div class="auth-features">
-                    <div class="feature-item">✓ Cursus de 4 Niveaux (Fondations à l'Expertise)</div>
-                    <div class="feature-item">✓ Cours massifs de référence (1-2 pages techniques)</div>
-                    <div class="feature-item">✓ QCM rigoureux de 6 questions & CTF par niveau</div>
+                    <div class="feature-item">✓ Cours massifs de référence (1-2 pages de lecture technique)</div>
+                    <div class="feature-item">✓ QCM rigoureux de 6 questions expertes</div>
+                    <div class="feature-item">✓ 8 Défis CTF progressifs et verrouillés</div>
                 </div>
             </div>
         </div>
@@ -95,7 +95,7 @@
                 <h2 style="color:#fff;">Piliers d'Apprentissage (Niveaux 1 à 4)</h2>
                 <div class="theme-grid" style="margin-top:20px;">
                     <div class="track-card card-dev" onclick="switchView('tracks-view'); openTrack('dev')">
-                        <div class="track-info"><h3>🌐 Fondations Web & API</h3><p>Architecture, JWT, OWASP Top 10.</p></div>
+                        <div class="track-info"><h3>🌐 Fondations Web & API</h3><p>Architecture, DOM, JWT, OWASP Top 10.</p></div>
                     </div>
                     <div class="track-card card-red" onclick="switchView('tracks-view'); openTrack('red')">
                         <div class="track-info"><h3>🔴 Red Team & Active Directory</h3><p>Linux, SQLi, Post-Exploitation & AD.</p></div>
@@ -114,11 +114,11 @@
             <div id="tracks-selection">
                 <div class="content-box" style="margin-bottom: 30px; border-left: 4px solid var(--accent);">
                     <h2 style="color: #fff; border:none; margin:0;">Piliers d'Apprentissage</h2>
-                    <p style="color:var(--text-muted); margin-top:10px;">Parcours structurés en 4 niveaux progressifs (du débutant à l'expert).</p>
+                    <p style="color:var(--text-muted); margin-top:10px;">Parcours structurés en 4 niveaux progressifs avec masterclasses détaillées.</p>
                 </div>
                 <div class="theme-grid">
                     <div class="track-card card-dev" onclick="openTrack('dev')">
-                        <div class="track-info"><h3>🌐 Fondations Web & API</h3><p>Architecture, JWT, OWASP Top 10.</p></div>
+                        <div class="track-info"><h3>🌐 Fondations Web & API</h3><p>Architecture, DOM, JWT, OWASP Top 10.</p></div>
                     </div>
                     <div class="track-card card-red" onclick="openTrack('red')">
                         <div class="track-info"><h3>🔴 Red Team & Active Directory</h3><p>Linux, SQLi, Post-Exploitation & AD.</p></div>
@@ -165,7 +165,7 @@
             <div id="ctf-container" class="theme-grid"></div>
         </div>
 
-        <!-- GRANDE VUE DE COURS MASSIVE -->
+        <!-- GRANDE VUE DE COURS MASSIVE (1-2 pages de lecture) -->
         <div id="theme-view" class="view-section">
             <button class="btn-back" onclick="switchView('tracks-view'); openTrack(currentTrack);">← Retour au Pilier</button>
             <div class="content-box">
