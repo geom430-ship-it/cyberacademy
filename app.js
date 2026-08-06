@@ -78,7 +78,7 @@ const trackDB = {
         {
             id: 401, title: "Niveau 1 : Les Fondations du Web",
             themes: [
-                { id: "d_html", title: "HTML & CSS : La structure", desc: "Comprendre l'architecture d'une page.", content: "<h2>Le Squelette d'Internet</h2><p>Le HTML structure la page. Pour un hacker, comprendre le DOM (Document Object Model) est vital pour exploiter des failles comme l'XSS ou trouver des commentaires cachés.</p>", simType: "dev_html", simData: { instruction: "Écrivez la balise pour un titre principal (h1) contenant 'Hack'." }, quiz: [{ q: "Quelle balise insère un lien cliquable ?", options: ["<link>", "<a>", "<href>"], ans: "1" }] },
+                { id: "d_html", title: "HTML & CSS : La structure", desc: "Comprendre l'architecture d'une page.", content: "<h2>Le Squelette d'Internet</h2><p>Le HTML n'est pas un langage de programmation, c'est un langage de balisage. Pour un hacker, comprendre le HTML est vital pour trouver des commentaires cachés.</p>", simType: "dev_html", simData: { instruction: "Écrivez la balise HTML pour créer un titre principal (h1) contenant le mot 'Hack'." }, quiz: [{ q: "Quelle balise insère un lien cliquable ?", options: ["<link>", "<a>", "<href>"], ans: "1" }] },
                 { id: "d_js", title: "JavaScript : Le Moteur", desc: "Rendre le web interactif.", content: "<h2>La logique côté client</h2><p>Le JavaScript s'exécute directement dans le navigateur. C'est la cible principale des attaques de type Cross-Site Scripting (XSS).</p>", simType: "none", quiz: [{ q: "Où s'exécute principalement le JS traditionnel ?", options: ["Sur le serveur DB", "Dans le navigateur de la victime"], ans: "1" }] }
             ],
             exam: [{ q: "Lequel de ces langages gère uniquement le design visuel ?", options: ["HTML", "JavaScript", "CSS"], ans: "2" }]
@@ -133,7 +133,7 @@ const badgesDef = {
 };
 
 // =========================================================================
-// 3. LOGIQUE D'AUTHENTIFICATION ET SAUVEGARDE
+// 3. LOGIQUE D'AUTHENTIFICATION ET DE VUES
 // =========================================================================
 
 let accounts = {};
@@ -144,11 +144,35 @@ let state = { completedCourses: [], completedExams: [], completedCTF: [], badges
 
 async function initApp() {
     try {
-        const storedDB = localStorage.getItem('cyberacademy_final_db');
+        const storedDB = localStorage.getItem('cyberacademy_gold_db');
         if (storedDB) accounts = JSON.parse(storedDB);
-        const session = localStorage.getItem('cyberacademy_final_session');
+        const session = localStorage.getItem('cyberacademy_gold_session');
         if (session && accounts[session]) loginUser(session);
     } catch (e) { accounts = {}; console.error("Database reset required."); }
+}
+
+// *** CORRECTION DU BUG DE SUPERPOSITION ICI ***
+// Le CSS de auth-view utilise maintenant flex seulement s'il a la classe active-view
+function switchView(targetViewId) {
+    // 1. Cacher toutes les vues proprement
+    document.querySelectorAll('.view-section').forEach(el => { 
+        el.classList.remove('active-view'); 
+        el.style.display = 'none'; 
+    });
+    
+    // 2. Afficher uniquement la vue cible
+    const target = document.getElementById(targetViewId);
+    if (target) { 
+        // Si c'est le panneau de connexion, on le passe en flex pour le split-screen, sinon en block
+        if (targetViewId === 'auth-view') {
+            target.style.display = 'flex';
+        } else {
+            target.style.display = 'block';
+        }
+        
+        setTimeout(() => target.classList.add('active-view'), 10); 
+    }
+    window.scrollTo(0, 0);
 }
 
 function setAuthMode(mode) {
@@ -178,7 +202,7 @@ async function processAuth() {
         } else {
             AudioEngine.playSuccess();
             accounts[user] = { passHash: secureHash, completedCourses: [], completedExams: [], completedCTF: [], badges: [] };
-            localStorage.setItem('cyberacademy_final_db', JSON.stringify(accounts));
+            localStorage.setItem('cyberacademy_gold_db', JSON.stringify(accounts));
             msgBox.style.display='block'; msgBox.style.color='var(--accent)'; msgBox.innerText="Opérateur enregistré.";
             setTimeout(() => loginUser(user), 1000);
         }
@@ -195,7 +219,7 @@ async function processAuth() {
 
 function loginUser(username) {
     activeUser = username;
-    localStorage.setItem('cyberacademy_final_session', username);
+    localStorage.setItem('cyberacademy_gold_session', username);
     
     state = {
         completedCourses: accounts[username].completedCourses || [],
@@ -209,6 +233,8 @@ function loginUser(username) {
     
     updateProfileUI();
     renderCTF();
+    
+    // Le code magique qui t'envoie direct sur le dashboard sans bug
     switchView('dashboard-view');
     document.getElementById('tracks-selection').style.display = 'grid';
     document.getElementById('track-content').style.display = 'none';
@@ -216,7 +242,7 @@ function loginUser(username) {
 
 function logout() {
     activeUser = null;
-    localStorage.removeItem('cyberacademy_final_session');
+    localStorage.removeItem('cyberacademy_gold_session');
     document.getElementById('main-header').classList.remove('visible');
     switchView('auth-view');
 }
@@ -224,7 +250,7 @@ function logout() {
 function saveProgress() {
     if (activeUser && accounts[activeUser]) {
         accounts[activeUser] = { ...accounts[activeUser], ...state };
-        localStorage.setItem('cyberacademy_final_db', JSON.stringify(accounts));
+        localStorage.setItem('cyberacademy_gold_db', JSON.stringify(accounts));
     }
     updateProfileUI();
 }
@@ -243,17 +269,11 @@ function updateProfileUI() {
     });
 }
 
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('active'); }
+
 // =========================================================================
 // 4. MOTEUR DE NAVIGATION (TRACKS & COURS)
 // =========================================================================
-
-function switchView(targetViewId) {
-    document.querySelectorAll('.view-section').forEach(el => { el.classList.remove('active-view'); el.style.display = 'none'; });
-    const target = document.getElementById(targetViewId);
-    if (target) { target.style.display = 'block'; setTimeout(() => target.classList.add('active-view'), 10); }
-    window.scrollTo(0, 0);
-}
-function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('active'); }
 
 function openTrack(trackKey) {
     currentTrack = trackKey;
@@ -281,7 +301,7 @@ function openTrack(trackKey) {
         let examBtnHTML = '';
         if (unlocked) {
             const examDone = state.completedExams.includes(level.id);
-            if (allThemesDone && !examDone) examBtnHTML = `<button class="exam-btn" style="border-color:var(--warning); color:var(--warning);" onclick="prepExam('${trackKey}', ${level.id})">LANCER L'ÉVALUATION</button>`;
+            if (allThemesDone && !examDone) examBtnHTML = `<button class="exam-btn" style="border-color:var(--warning); color:var(--warning);" onclick="prepExam('${trackKey}', ${level.id})">LANCER L'ÉVALUATION FINALE</button>`;
             else if (examDone) examBtnHTML = `<button class="exam-btn" style="background:var(--accent); color:#000; border:none;" onclick="showCertificate(${level.id}, '${titles[trackKey]}')">🏆 CERTIFICAT OBTENU</button>`;
         }
         container.innerHTML += `<div class="level-section"><div class="level-header"><h3>${level.title}</h3>${statusBadge}</div><div class="theme-grid">${themesHTML}</div>${examBtnHTML}</div>`;
